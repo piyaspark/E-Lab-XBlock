@@ -1,0 +1,13 @@
+setup.py
+elabxblock/__init__.py
+elabxblock/elabxblock.py
+elabxblock/static/README.txt
+elabxblock/static/css/elabxblock.css
+elabxblock/static/html/elabxblock.html
+elabxblock/static/js/src/elabxblock.js
+elabxblock_xblock.egg-info/PKG-INFO
+elabxblock_xblock.egg-info/SOURCES.txt
+elabxblock_xblock.egg-info/dependency_links.txt
+elabxblock_xblock.egg-info/entry_points.txt
+elabxblock_xblock.egg-info/requires.txt
+elabxblock_xblock.egg-info/top_level.txt
