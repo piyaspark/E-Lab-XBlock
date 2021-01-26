@@ -24,12 +24,13 @@ class ELabXBlock(XBlock):
     # Fields are defined on the class.  You can access them in your code as
     # self.<fieldname>.
 
-    title = String(default="Title", scope=Scope.user_state)
-    description = String(default="Description", scope=Scope.user_state)
-    runtime_limit = String(default="1000", scope=Scope.user_state)
-    memory_limit = String(default="500", scope=Scope.user_state)
-    programing_language = String(default="python", scope=Scope.user_state)
-    input_list = List(default=[{'i': 0, 'value': ''}], scope=Scope.user_state)
+    title = String(help="Title of the problem",default="", scope=Scope.content)
+    description = String(help="Description about the problem such as instruction", default="", scope=Scope.content)
+    runtime_limit = String(help="Runtime limit for compiling", default="", scope=Scope.content)
+    memory_limit = String(help="Memory limit for compiling", default="", scope=Scope.content)
+    programing_language = String(help="Programming langauge that need to use in this problem", default="python", scope=Scope.content)
+
+    input_list = List(default=[{'i': 0, 'value': ''}], scope=Scope.content)
 
     PROGRAMING_LANGUAGE = {
         'python': 'Python',

@@ -4,6 +4,7 @@ function Studio(runtime, element) {
     const saveStatus = (result) => {
         if (result.success === 1) {
             alert("Save Success")
+            
         } else {
             alert("Save failure missing " + result.data)
             $(`#${result.data}`, element).focus()
@@ -22,7 +23,8 @@ function Studio(runtime, element) {
             "</div>");
     });
 
-    $('#save_button', element).click(function (eventObject) {
+    $(element).find('.save-button').click(function (eventObject) {
+        // console.log("Save button clicked!")
         const title = $('#title', element).val()
         const description = $('#description', element).val()
         const runtimeLimit = $('#runtime_limit', element).val() !== "" ? $('#runtime_limit', element).val() : "1000"
@@ -37,6 +39,7 @@ function Studio(runtime, element) {
                 inputs.push(listInput[i].value)
         }
 
+        runtime.notify('save', {state: 'start'})
         $.ajax({
             type: "POST",
             url: handleSaveUrl,
@@ -49,8 +52,15 @@ function Studio(runtime, element) {
                 listInput: listInput.length === 0 ? [""] : inputs
             }),
             success: saveStatus
-        });
+        }).done(function(response) {
+            runtime.notify('save', {state: 'end'})
+        }) 
     });
+
+    $(element).find('.cancel-button').bind('click', function() {
+        // console.log('Cancel button clicked')
+        runtime.notify('cancel', {});
+      });
 
     $(function ($) {
         /* Here's where you'd do things on page load. */
