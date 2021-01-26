@@ -1,10 +1,11 @@
 """TO-DO: Write a description of what this XBlock is."""
 
-import pkg_resources
 import logging
+
+import pkg_resources
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock
-from xblock.fields import Integer, Scope, List
+from xblock.fields import Scope, List, String
 from xblockutils.resources import ResourceLoader
 
 # Make '_' a no-op so we can scrape strings
@@ -20,49 +21,93 @@ def resource_string(path):
 
 
 class ELabXBlock(XBlock):
-    """
-    TO-DO: document what your XBlock does.
-    """
-
     # Fields are defined on the class.  You can access them in your code as
     # self.<fieldname>.
 
-    count = Integer(
-        default=0, scope=Scope.user_state,
-        help="A simple counter, to show something happening",
-    )
-    input_list = List(default=[{'i': 0, 'value': ''}])
+    title = String(default="Title", scope=Scope.user_state)
+    description = String(default="Description", scope=Scope.user_state)
+    runtime_limit = String(default="1000", scope=Scope.user_state)
+    memory_limit = String(default="500", scope=Scope.user_state)
+    programing_language = String(default="python", scope=Scope.user_state)
+    input_list = List(default=[{'i': 0, 'value': ''}], scope=Scope.user_state)
+
+    PROGRAMING_LANGUAGE = {
+        'python': 'Python',
+        'python2': 'Python 2',
+        'python3': 'Python 3',
+        'csharp': 'C#',
+        'java': 'Java',
+        'c': 'C',
+        'cplusplus': 'C++',
+        'cplusplus11': 'C++11',
+        'plaintext': 'Plain Text',
+        'makefile': 'Makefile',
+        'shellscript': 'Shell script'
+    }
 
     def student_view(self, context=None):
         """
         The primary view of the ELabXBlock, shown to students
         when viewing courses.
         """
-        context_html = {'count': self.count, 'input_list': self.input_list}
+        context_html = {'title': self.title, 
+                        'description': self.description, 
+                        'runtime_limit': self.runtime_limit,
+                        'memory_limit': self.memory_limit,
+                        'programing_language': self.PROGRAMING_LANGUAGE[self.programing_language],
+                        'test_case_len': len(self.input_list)}
         template = loader.render_django_template(
-            'static/html/elabxblock.html',
+            'static/html/student.html',
+            context=context_html
+        )
+        # html = resource_string("static/html/studio.html")
+        frag = Fragment(template)
+        frag.add_css(resource_string("static/css/elabxblock.css"))
+        frag.add_javascript(resource_string("static/js/src/student.js"))
+        frag.initialize_js('Student')
+        return frag
+
+    def studio_view(self, context=None):
+        """
+        The primary view of the ELabXBlock, shown to students
+        when viewing courses.
+        """
+        context_html = {'title': self.title, 'description': self.description, 'runtime_limit': self.runtime_limit,
+                        'memory_limit': self.memory_limit, 'programing_language': self.programing_language,
+                        'input_list': self.input_list, 'pl': self.PROGRAMING_LANGUAGE}
+        template = loader.render_django_template(
+            'static/html/studio.html',
             context=context_html
         )
 
-        # html = resource_string("static/html/elabxblock.html")
+        # html = resource_string("static/html/studio.html")
         frag = Fragment(template)
         frag.add_css(resource_string("static/css/elabxblock.css"))
-        frag.add_javascript(resource_string("static/js/src/elabxblock.js"))
-        frag.initialize_js('ELabXBlock')
+        frag.add_javascript(resource_string("static/js/src/studio.js"))
+        frag.initialize_js('Studio')
         return frag
 
-    # TO-DO: change this handler to perform your own actions.  You may need more
-    # than one handler, or you may not need any handlers at all.
     @XBlock.json_handler
-    def increment_count(self, data, suffix=''):
-        """
-        An example handler, which increments the data.
-        """
-        # Just to show data coming in...
-        assert data['hello'] == 'world'
+    def save_data(self, data, suffix=''):
+        for key in data:
+            if not data[key] and key != 'listInput':
+                return {"success": 0, "data": key}
 
-        self.count += 1
-        return {"count": self.count}
+        self.title = data['title']
+        self.description = data['description']
+        self.runtime_limit = data['runtime_limit']
+        self.memory_limit = data['memory_limit']
+        self.programing_language = data['programing_language']
+
+        listInput = data['listInput']
+        inputs = []
+        for i in range(len(listInput)):
+            inputs.append({
+                'i': i,
+                'value': listInput[i]
+            })
+        self.input_list = inputs
+        return {"success": 1}
 
     @XBlock.json_handler
     def increase_input(self, data, suffix=''):

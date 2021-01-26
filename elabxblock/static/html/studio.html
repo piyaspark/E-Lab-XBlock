@@ -1,0 +1,50 @@
+<div>
+    <h1 class="my-2">Title</h1>
+    <input class="w-full text-lg" id="title" placeholder="Title" value="{{title}}"/>
+    <h3 class="my-2">Description</h3>
+    <textarea class="w-full text-lg" cols="50" id="description" placeholder="Description..."
+              rows="3">{{description}}</textarea>
+    <h3 class="my-2">Task Specification</h3>
+    <div class="flex-col">
+        <div class="flex flex-row mx-2 my-1 align-left items-center">
+            <p class="m-1">Runtime Limit</p>
+            <input class="h-auto text-center" id="runtime_limit" placeholder="1000" value="{{runtime_limit}}"/>
+            <p class="m-1">ms</p>
+        </div>
+        <div class="flex flex-row mx-2 my-1 align-left items-center">
+            <p class="m-1">Memory Limit</p>
+            <input class="text-center h-auto" id="memory_limit" placeholder="500" value="{{memory_limit}}"/>
+            <p class="m-1">kb</p>
+        </div>
+        <div class="flex flex-row mx-2 my-1 align-left items-center">
+            <p class="m-1">Programing Language</p>
+            <select id="programing_language" name="programing_language">
+                {% for key, value in pl.items %}
+                {% if programing_language == key %}
+                <option selected value="{{key}}">{{value}}</option>
+                {% else %}
+                <option value="{{key}}">{{value}}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="flex-row flex my-2 align-left items-center">
+        <h3>Test Case</h3>
+        <button class="ml-2" id="add_input">Add Input</button>
+    </div>
+    <div class="flex flex-col" id="input_box">
+        {% for input in input_list %}
+        <div class="flex flex-row my-1 mx-2 align-left items-center">
+            <p class="mx-1 my-1">Input #{{input.i|add:1}}</p>
+            <input class="h-auto text-center input_selector" placeholder="input {{input.i|add:1}}"
+                   value="{{input.value}}"/>
+            <p class="ml-2 text-red-500 my-1 cursor-pointer"
+               onclick="removeInput(this)">X</p>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="flex justify-center items-center">
+        <button class="text-xl py-2 px-6 rounded-md bg-blue-500" id="save_button">Save</button>
+    </div>
+</div>
