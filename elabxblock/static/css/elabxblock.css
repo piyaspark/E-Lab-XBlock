@@ -7,6 +7,24 @@ button {
   cursor: pointer;
 }
 
+emstart {
+    background-position: left -3px top -3px;
+    padding: 10px 10px 5px 10px;
+    background-color:#aabbcc;
+    border:1px dotted #CCCCCC;
+    height:50px;
+    width:100px;
+}
+
+emend {
+    background-position: left -3px bottom -3px;
+    padding: 5px 10px 10px 10px;
+    background-color:#aabbcc;
+    border:1px dotted #CCCCCC;
+    height:50px;
+    width:100px;
+}
+
 /* tailwind end components */
 
 .appearance-none {

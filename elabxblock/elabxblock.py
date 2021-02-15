@@ -29,7 +29,8 @@ class ELabXBlock(XBlock):
     runtime_limit = String(help="Runtime limit for compiling", default="", scope=Scope.content)
     memory_limit = String(help="Memory limit for compiling", default="", scope=Scope.content)
     programing_language = String(help="Programming langauge that need to use in this problem", default="python", scope=Scope.content)
-
+    
+    editor_content = String(default="<div></div>", scope=Scope.content)
     input_list = List(default=[{'i': 0, 'value': ''}], scope=Scope.content)
 
     PROGRAMING_LANGUAGE = {
@@ -52,11 +53,13 @@ class ELabXBlock(XBlock):
         when viewing courses.
         """
         context_html = {'title': self.title, 
-                        'description': self.description, 
+                        'description': self.description,
                         'runtime_limit': self.runtime_limit,
                         'memory_limit': self.memory_limit,
                         'programing_language': self.PROGRAMING_LANGUAGE[self.programing_language],
-                        'test_case_len': len(self.input_list)}
+                        'test_case_len': len(self.input_list),
+                        'editor_content': self.editor_content
+                        }
         template = loader.render_django_template(
             'static/html/student.html',
             context=context_html
@@ -75,7 +78,7 @@ class ELabXBlock(XBlock):
         """
         context_html = {'title': self.title, 'description': self.description, 'runtime_limit': self.runtime_limit,
                         'memory_limit': self.memory_limit, 'programing_language': self.programing_language,
-                        'input_list': self.input_list, 'pl': self.PROGRAMING_LANGUAGE}
+                        'input_list': self.input_list, 'pl': self.PROGRAMING_LANGUAGE, 'editor_content': self.editor_content}
         template = loader.render_django_template(
             'static/html/studio.html',
             context=context_html
@@ -99,6 +102,7 @@ class ELabXBlock(XBlock):
         self.runtime_limit = data['runtime_limit']
         self.memory_limit = data['memory_limit']
         self.programing_language = data['programing_language']
+        self.editor_content = data['editor_content']
 
         listInput = data['listInput']
         inputs = []

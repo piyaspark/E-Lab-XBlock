@@ -1,10 +1,13 @@
 <div xmlns="http://www.w3.org/1999/html">
+    {% if title %}
     <h1 class="my-2">{{title}}</h1>
     <p class="my-2 text-base">{{description}}</p>
-    <div class="flex flex-col">
+    <div id="task_information" class="flex flex-col">
         <p class="my-1">Runtime Limit: <b>{{runtime_limit}}</b> ms</p>
         <p class="my-1">Memory Limit: <b>{{memory_limit}}</b> kb</p>
         <p class="my-1">Programming Language: <b>{{programing_language}}</b></p>
         <p class="my-1">Test Cases: <b>{{test_case_len}}</b></p>
+        {{editor_content | safe}}
     </div>
+    {% endif %}
 </div>
