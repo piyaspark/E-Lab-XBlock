@@ -1,9 +1,5 @@
 <div>
-    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
-
-    <script>
-
-    </script>
+    <script referrerpolicy="origin" src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js"></script>
 
     <h1 class="my-2">Title</h1>
     <input class="w-full text-lg" id="title" placeholder="Title" value="{{title}}"/>
@@ -53,17 +49,39 @@
     <!-- <div class="flex justify-center items-center">
         <button class="text-xl py-2 px-6 rounded-md bg-blue-500" id="save_button">Save</button>
     </div> -->
-    <!-- <form> -->
-      <textarea id="tinymce">Hello, World!</textarea>
-    <!-- </form> -->
+    <textarea id="tinymce">
+        {% if editor_content %}
+            {{ editor_content|safe }}
+        {% else %}
+            Hello, world
+        {% endif %}
+    </textarea>
     <div class="xblock-actions">
         <ul>
-          <li class="action-item">
-            <a href="#" class="button action-primary save-button">Save</a>
-          </li>
-          <li class="action-item">
-            <a href="#" class="button cancel-button">Cancel</a>
-          </li>
+            <li class="action-item">
+                <a class="button action-primary save-button" href="#">Save</a>
+            </li>
+            <li class="action-item">
+                <a class="button cancel-button" href="#">Cancel</a>
+            </li>
         </ul>
     </div>
+
+    <script>
+        $(window).on("load", function () {
+            const tmce = tinymce.activeEditor.getBody()
+            const answerIps = tmce.getElementsByTagName("input")
+            const sourcodeIps = tmce.getElementsByTagName("textarea")
+            const answers = {{answers |safe}}
+            const sourcodes = {{source_codes |safe}}
+
+            for (let i = 0; i < answerIps.length; i++) {
+                answerIps[i].value = answers[i] === "" ? "" : answers[i]
+            }
+            for (let i = 0; i < sourcodeIps.length; i++) {
+                sourcodeIps[i].value = sourcodes[i] === "" ? "" : sourcodes[i]
+            }
+
+        });
+    </script>
 </div>

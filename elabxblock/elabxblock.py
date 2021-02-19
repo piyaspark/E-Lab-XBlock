@@ -24,14 +24,17 @@ class ELabXBlock(XBlock):
     # Fields are defined on the class.  You can access them in your code as
     # self.<fieldname>.
 
-    title = String(help="Title of the problem",default="", scope=Scope.content)
+    title = String(help="Title of the problem", default="", scope=Scope.content)
     description = String(help="Description about the problem such as instruction", default="", scope=Scope.content)
     runtime_limit = String(help="Runtime limit for compiling", default="", scope=Scope.content)
     memory_limit = String(help="Memory limit for compiling", default="", scope=Scope.content)
-    programing_language = String(help="Programming langauge that need to use in this problem", default="python", scope=Scope.content)
-    
+    programing_language = String(help="Programming langauge that need to use in this problem", default="python",
+                                 scope=Scope.content)
+
     editor_content = String(default="<div></div>", scope=Scope.content)
     input_list = List(default=[{'i': 0, 'value': ''}], scope=Scope.content)
+    answers = List(default=["asdasd"], scope=Scope.content)
+    source_codes = List(default=["asdadasdas"], scope=Scope.content)
 
     PROGRAMING_LANGUAGE = {
         'python': 'Python',
@@ -52,7 +55,7 @@ class ELabXBlock(XBlock):
         The primary view of the ELabXBlock, shown to students
         when viewing courses.
         """
-        context_html = {'title': self.title, 
+        context_html = {'title': self.title,
                         'description': self.description,
                         'runtime_limit': self.runtime_limit,
                         'memory_limit': self.memory_limit,
@@ -78,7 +81,9 @@ class ELabXBlock(XBlock):
         """
         context_html = {'title': self.title, 'description': self.description, 'runtime_limit': self.runtime_limit,
                         'memory_limit': self.memory_limit, 'programing_language': self.programing_language,
-                        'input_list': self.input_list, 'pl': self.PROGRAMING_LANGUAGE, 'editor_content': self.editor_content}
+                        'input_list': self.input_list, 'pl': self.PROGRAMING_LANGUAGE,
+                        'editor_content': self.editor_content, 'answers': self.answers,
+                        'source_codes': self.source_codes}
         template = loader.render_django_template(
             'static/html/studio.html',
             context=context_html
@@ -103,6 +108,8 @@ class ELabXBlock(XBlock):
         self.memory_limit = data['memory_limit']
         self.programing_language = data['programing_language']
         self.editor_content = data['editor_content']
+        self.answers = data['answers']
+        self.source_codes = data['sourcecodes']
 
         listInput = data['listInput']
         inputs = []
