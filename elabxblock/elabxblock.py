@@ -1,11 +1,12 @@
 """TO-DO: Write a description of what this XBlock is."""
 
+import datetime
 import logging
 
 import pkg_resources
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock
-from xblock.fields import Scope, List, String
+from xblock.fields import Scope, List, String, Dict
 from xblockutils.resources import ResourceLoader
 
 # Make '_' a no-op so we can scrape strings
@@ -33,8 +34,10 @@ class ELabXBlock(XBlock):
 
     editor_content = String(default="<div></div>", scope=Scope.content)
     input_list = List(default=[{'i': 0, 'value': ''}], scope=Scope.content)
-    answers = List(default=["asdasd"], scope=Scope.content)
-    source_codes = List(default=["asdadasdas"], scope=Scope.content)
+    student_contents = String(default="<div></div>", scope=Scope.content)
+    answer_contents = String(default="", scope=Scope.content)
+
+    student_inputs = Dict(default={}, scope=Scope.content)
 
     PROGRAMING_LANGUAGE = {
         'python': 'Python',
@@ -55,13 +58,15 @@ class ELabXBlock(XBlock):
         The primary view of the ELabXBlock, shown to students
         when viewing courses.
         """
+
         context_html = {'title': self.title,
                         'description': self.description,
                         'runtime_limit': self.runtime_limit,
                         'memory_limit': self.memory_limit,
                         'programing_language': self.PROGRAMING_LANGUAGE[self.programing_language],
                         'test_case_len': len(self.input_list),
-                        'editor_content': self.editor_content
+                        'student_content': self.student_contents,
+                        'student_inputs': self.student_inputs
                         }
         template = loader.render_django_template(
             'static/html/student.html',
@@ -82,8 +87,7 @@ class ELabXBlock(XBlock):
         context_html = {'title': self.title, 'description': self.description, 'runtime_limit': self.runtime_limit,
                         'memory_limit': self.memory_limit, 'programing_language': self.programing_language,
                         'input_list': self.input_list, 'pl': self.PROGRAMING_LANGUAGE,
-                        'editor_content': self.editor_content, 'answers': self.answers,
-                        'source_codes': self.source_codes}
+                        'editor_content': self.editor_content}
         template = loader.render_django_template(
             'static/html/studio.html',
             context=context_html
@@ -97,6 +101,11 @@ class ELabXBlock(XBlock):
         return frag
 
     @XBlock.json_handler
+    def submit_answer(self, data, suffix=''):
+        self.student_inputs = data['student_inputs']
+        return {"success": 1}
+
+    @XBlock.json_handler
     def save_data(self, data, suffix=''):
         for key in data:
             if not data[key] and key != 'listInput':
@@ -108,8 +117,8 @@ class ELabXBlock(XBlock):
         self.memory_limit = data['memory_limit']
         self.programing_language = data['programing_language']
         self.editor_content = data['editor_content']
-        self.answers = data['answers']
-        self.source_codes = data['sourcecodes']
+        self.student_contents = data['student_content']
+        self.answer_contents = data['answer_content']
 
         listInput = data['listInput']
         inputs = []

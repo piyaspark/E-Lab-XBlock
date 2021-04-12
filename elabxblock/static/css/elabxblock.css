@@ -7,22 +7,35 @@ button {
   cursor: pointer;
 }
 
-emstart {
-    background-position: left -3px top -3px;
-    padding: 10px 10px 5px 10px;
-    background-color:#aabbcc;
-    border:1px dotted #CCCCCC;
-    height:50px;
-    width:100px;
+.student_container{
+  border: 1px solid black;
 }
 
-emend {
-    background-position: left -3px bottom -3px;
-    padding: 5px 10px 10px 10px;
-    background-color:#aabbcc;
-    border:1px dotted #CCCCCC;
-    height:50px;
-    width:100px;
+.tab_button{
+  cursor: pointer;
+  border: 1px solid black;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom: none;
+  margin-bottom: 0;
+  margin-right: 0;
+  margin-left: 0;
+  background-color: white;
+}
+
+.tab_button:active{
+  color: #5ab02b;
+}
+
+.active{
+  background-color: #4672f1;
+  color: white;
+}
+
+.tab_button:disabled{
+  cursor: auto;
+  background-color: #f1f1f1;
+  color: #e5e5e5;
 }
 
 /* tailwind end components */

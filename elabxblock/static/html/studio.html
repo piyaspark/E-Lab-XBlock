@@ -66,22 +66,4 @@
             </li>
         </ul>
     </div>
-
-    <script>
-        $(window).on("load", function () {
-            const tmce = tinymce.activeEditor.getBody()
-            const answerIps = tmce.getElementsByTagName("input")
-            const sourcodeIps = tmce.getElementsByTagName("textarea")
-            const answers = {{answers |safe}}
-            const sourcodes = {{source_codes |safe}}
-
-            for (let i = 0; i < answerIps.length; i++) {
-                answerIps[i].value = answers[i] === "" ? "" : answers[i]
-            }
-            for (let i = 0; i < sourcodeIps.length; i++) {
-                sourcodeIps[i].value = sourcodes[i] === "" ? "" : sourcodes[i]
-            }
-
-        });
-    </script>
 </div>
