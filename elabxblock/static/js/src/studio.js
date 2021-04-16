@@ -45,25 +45,42 @@ function Studio(runtime, element) {
         // const tmce = tinymce.activeEditor.getBody()
         const studentBody = `<div contenteditable="false">${toStudentContent(tinymce.activeEditor.getBody())}</div>`;
 
-        runtime.notify('save', {state: 'start'})
-        $.ajax({
-            type: "POST",
-            url: handleSaveUrl,
-            data: JSON.stringify({
-                title: title,
-                description: description,
-                runtime_limit: runtimeLimit,
-                memory_limit: memoryLimit,
-                programing_language: programingLanguage,
-                listInput: listInput.length === 0 ? [""] : inputs,
-                editor_content: tinymce.activeEditor.getContent(),
-                student_content: studentBody,
-                answer_content: answerContent
-            }),
-            success: saveStatus
-        }).done(function (response) {
-            runtime.notify('save', {state: 'end'})
-        })
+        let data = {
+            title: title,
+            description: description,
+            runtime_limit: runtimeLimit,
+            memory_limit: memoryLimit,
+            programing_language: programingLanguage,
+            listInput: listInput.length === 0 ? [""] : inputs,
+            editor_content: tinymce.activeEditor.getContent(),
+            student_content: studentBody,
+            answer_content: answerContent
+        }
+
+        runtime.notify('save', {state: 'start'});
+        $.post(handleSaveUrl, JSON.stringify(data)).done(function(response) {
+            runtime.notify('save', {state: 'end'});
+        });
+        // $.ajax({
+        //     type: "POST",
+        //     url: handleSaveUrl,
+        //     data: JSON.stringify({
+        //         title: title,
+        //         description: description,
+        //         runtime_limit: runtimeLimit,
+        //         memory_limit: memoryLimit,
+        //         programing_language: programingLanguage,
+        //         listInput: listInput.length === 0 ? [""] : inputs,
+        //         editor_content: tinymce.activeEditor.getContent(),
+        //         student_content: studentBody,
+        //         answer_content: answerContent
+        //     }),
+        //     success: saveStatus
+        // }).done(function (response) {
+        //     runtime.notify('save', {state: 'end'})
+        // })
+
+
     });
 
     $(element).find('.cancel-button').bind('click', function () {
