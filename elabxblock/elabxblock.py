@@ -128,7 +128,8 @@ class ELabXBlock(XBlock):
                 'value': listInput[i]
             })
         self.input_list = inputs
-        return {"success": 1}
+        
+        return {'result': 'success'}
 
     @XBlock.json_handler
     def increase_input(self, data, suffix=''):
