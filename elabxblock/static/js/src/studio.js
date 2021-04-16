@@ -25,7 +25,7 @@ function Studio(runtime, element) {
 
 
     $(element).find('.save-button').click(function (eventObject) {
-        // console.log("Save button clicked!")
+        console.log("Save button clicked!")
         const title = $('#title', element).val()
         const description = $('#description', element).val()
         const runtimeLimit = $('#runtime_limit', element).val() !== "" ? $('#runtime_limit', element).val() : "1000"
@@ -84,7 +84,7 @@ function Studio(runtime, element) {
     });
 
     $(element).find('.cancel-button').bind('click', function () {
-        // console.log('Cancel button clicked')
+        console.log('Cancel button clicked')
         runtime.notify('cancel', {});
     });
 
