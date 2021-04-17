@@ -89,38 +89,21 @@ function Studio(runtime, element) {
     });
 
     const replaceCSSToString = (css) => {
-        return JSON.stringify(css).replaceAll("}","").replaceAll("{","").replaceAll("\"","").replaceAll(",",";")
+        return JSON.stringify(css).replaceAll("}", "").replaceAll("{", "").replaceAll("\"", "").replaceAll(",", ";")
     }
 
-    //answerspan
-    tinymce.PluginManager.add('answerspan', function (editor, url) {
-        const toggleSpan = () => {
-            if (tinymce.activeEditor.selection.getNode().tagName.toLowerCase() === "span") return
-            tinymce.activeEditor.formatter.toggle('answerspan');
+    const insertSelectionWithCss = (editor, css, cl, checkBr = false) => {
+        const selection = tinymce.activeEditor.selection.getContent()
+        const node = tinymce.activeEditor.selection.getNode()
+        console.log(node.childNodes[node.childNodes.length - 1].nodeName !== "BR")
+        const styles = replaceCSSToString(css)
+        if (selection.includes("span")) return;
+        if (checkBr && node.childNodes[node.childNodes.length - 1].nodeName !== "BR") {
+            tinymce.activeEditor.selection.setContent("<span class='" + cl + "' style='" + styles + "' >" + selection + "</span><br>")
+        } else {
+            tinymce.activeEditor.selection.setContent("<span class='" + cl + "' style='" + styles + "' >" + selection + "</span>")
         }
-
-        editor.ui.registry.addButton('answerspan', {
-            text: 'Answer Span',
-            onAction: function () {
-                toggleSpan();
-            }
-        });
-    });
-
-    //answersource
-    tinymce.PluginManager.add('answersource', function (editor, url) {
-        const toggleSpan = () => {
-            if (tinymce.activeEditor.selection.getNode().tagName.toLowerCase() === "span") return
-            tinymce.activeEditor.formatter.toggle('answersource');
-        }
-
-        editor.ui.registry.addButton('answersource', {
-            text: 'Answer Source',
-            onAction: function () {
-                toggleSpan();
-            }
-        });
-    });
+    }
 
     //badge
     tinymce.PluginManager.add('badge', function (editor, url) {
@@ -152,20 +135,49 @@ function Studio(runtime, element) {
         });
     });
 
+    //answerspan
+    tinymce.PluginManager.add('answerspan', function (editor, url) {
+        const toggleSpan = () => {
+            if (tinymce.activeEditor.selection.getNode().tagName.toLowerCase() === "span") return
+            insertSelectionWithCss(editor, tinymceCSS.answerspan, 'answerspan')
+            // tinymce.activeEditor.formatter.toggle('answerspan');
+        }
+
+        editor.ui.registry.addButton('answerspan', {
+            text: 'Answer Text',
+            onAction: function () {
+                toggleSpan();
+            }
+        });
+    });
+
     //sourcespan
     tinymce.PluginManager.add('sourcespan', function (editor, url) {
         const toggleSpan = () => {
-            // console.log(tinymce.activeEditor.selection.getContent())
-            // const selection = tinymce.activeEditor.selection.getContent()
-            // const styles = replaceCSSToString(tinymceCSS.sourcespan)
-            // editor.insertContent("<span class='sourcespan' style='"+ styles +"' >" + selection + "</span>")
 
             if (tinymce.activeEditor.selection.getNode().className.toLowerCase() !== "hiddensource") return
-            tinymce.activeEditor.formatter.toggle('sourcespan');
+
+            // tinymce.activeEditor.formatter.toggle('sourcespan');
+            insertSelectionWithCss(editor, tinymceCSS.sourcespan, 'sourcespan', true)
         }
 
         editor.ui.registry.addButton('sourcespan', {
-            text: 'Source Span',
+            text: 'Student Source',
+            onAction: function () {
+                toggleSpan();
+            }
+        });
+    });
+
+    //hidespan
+    tinymce.PluginManager.add('hidespan', function (editor, url) {
+        const toggleSpan = () => {
+            if (tinymce.activeEditor.selection.getNode().className.toLowerCase() !== "hiddensource") return
+            tinymce.activeEditor.formatter.toggle('hidespan');
+        }
+
+        editor.ui.registry.addButton('hidespan', {
+            text: 'Hide',
             onAction: function () {
                 toggleSpan();
             }
@@ -176,46 +188,11 @@ function Studio(runtime, element) {
     tinymce.PluginManager.add('hiddensource', function (editor, url) {
         const toggleSpan = () => {
             if (tinymce.activeEditor.selection.getNode().tagName.toLowerCase() === "span") return
-            tinymce.activeEditor.formatter.toggle('hiddensource');
+            tinymce.activeEditor.formatter.apply('hiddensource');
         }
 
         editor.ui.registry.addButton('hiddensource', {
-            text: 'Hidden Source',
-            onAction: function () {
-                toggleSpan();
-            }
-        });
-    });
-
-    //exclude
-    tinymce.PluginManager.add('exclude', function (editor, url) {
-        const toggleSpan = () => {
-            if (tinymce.activeEditor.selection.getNode().tagName.toLowerCase() === "span") return
-            tinymce.activeEditor.formatter.toggle('exclude');
-        }
-
-        editor.ui.registry.addButton('exclude', {
-            text: 'Exclude',
-            onAction: function () {
-                toggleSpan();
-            }
-        });
-    });
-
-    //hidden
-    tinymce.PluginManager.add('hidden', function (editor, url) {
-        const toggleSpan = () => {
-            if (tinymce.activeEditor.selection.getNode().tagName.toLowerCase() === "span") return
-            tinymce.activeEditor.formatter.apply('hidden');
-            //   tinymce.DOM.addClass('hidden', 'hidden');
-            //   tinymce.activeEditor.dom.addClass(tinymce.activeEditor.dom.select('span'), 'hidden');
-            alert(tinymce.activeEditor.selection.getNode().span);
-
-
-        }
-
-        editor.ui.registry.addButton('hidden', {
-            text: 'Hidden',
+            text: 'Source Code',
             onAction: function () {
                 toggleSpan();
             }
@@ -225,16 +202,15 @@ function Studio(runtime, element) {
     //student preview
     tinymce.PluginManager.add('studentpreview', function (editor, url) {
         const previewDialog = () => {
-            const body = `<div style="height: 0;">${toStudentContent(tinymce.activeEditor.getBody())}</div>`
-
             return editor.windowManager.open({
                 title: 'Student Preview',
                 size: 'large',
                 body: {
                     type: 'panel',
                     items: [{
-                        type: 'htmlpanel',
-                        html: body
+                        type: 'iframe',
+                        name: 'iframe',
+                        sandboxed: false
                     }]
                 },
                 buttons: [{
@@ -242,6 +218,8 @@ function Studio(runtime, element) {
                     text: 'Close',
                     primary: true
                 }],
+            }).setData({
+                iframe: toStudentContent(tinymce.activeEditor.getBody())
             })
         }
 
@@ -259,10 +237,9 @@ function Studio(runtime, element) {
 
         const answerspan = studentBody.getElementsByClassName('answerspan')
         const answerspanLength = answerspan.length
-        const answersource = studentBody.getElementsByClassName('answersource')
-        const answersourceLength = answersource.length
         const sourcespan = studentBody.getElementsByClassName('sourcespan')
         const sourcespanLength = sourcespan.length
+        const hiddensource = studentBody.getElementsByClassName('hiddensource')
 
         for (let i = 0; i < answerspanLength; i++) {
             if (answerspan[0].innerHTML.includes("<br>")) {
@@ -271,19 +248,24 @@ function Studio(runtime, element) {
                 answerspan[0].outerHTML = `<input type='text' class="answerspanInput" placeholder="answer here" style='padding-left: 2px;background-color: #ADFFEE; border: 1px solid black;'/>`
             }
         }
-        for (let i = 0; i < answersourceLength; i++) {
-            if (answersource[0].innerHTML.includes("<br>")) {
-                answersource[0].outerHTML = `<textarea class="answersourceInput"  placeholder="answer here" style='padding-left: 2px; padding-right 2px; background-color: #ffedba; border: 1px solid black; height:${(answersource[0].innerHTML.match(/br/g) || []).length * 25}px;'/>`
+        for (let i = 0; i < sourcespanLength; i++) {
+            if (sourcespan[0].innerHTML.includes("<br>")) {
+                sourcespan[0].outerHTML = `<textarea  class="sourcespanInput"  placeholder="source code here" style='padding-left: 2px; padding-right 2px; height: ${((sourcespan[0].innerHTML.match(/br/g) || []).length * 25) + 50}px; background-color: #ffedba; border: 1px solid black;'/>`
             } else {
-                answersource[0].outerHTML = `<input type='text' class="answersourceInput"  placeholder="answer here" style='padding-left: 2px; padding-right 2px; background-color: #ffedba; border: 1px solid black;'/>`
+                sourcespan[0].outerHTML = `<input type='text' class="sourcespanInput"  placeholder="answer here" style='padding-left: 2px; padding-right 2px; background-color: #ffedba; border: 1px solid black;'/>`
             }
         }
-        for (let i = 0; i < sourcespanLength; i++) {
-            sourcespan[0].outerHTML = `<textarea  class="sourcespanInput"  placeholder="source code here" style='padding-left: 2px; padding-right 2px; height: ${((sourcespan[0].innerHTML.match(/br/g) || []).length * 25) + 50}px; width: 100%; background-color: #ffedba; border: 1px solid black;'/>`
+
+        for (let i = 0; i < hiddensource.length; i++) {
+            for (let j = 0; j < hiddensource[i].children.length; j++) {
+                const className = hiddensource[i].children[j].className
+                if (className === "hidespan") {
+                    hiddensource[i].children[j].style.display = 'none'
+                    if (j + 1 < hiddensource[i].children.length)
+                        hiddensource[i].children[j + 1].remove()
+                }
+            }
         }
-        $(studentBody).find('.hiddensource').replaceWith(function() {
-            return $('textarea', this);
-        });
 
         return studentBody.outerHTML
     }
@@ -292,25 +274,15 @@ function Studio(runtime, element) {
         const studentBody = body.cloneNode(true)
 
         const answerspan = studentBody.getElementsByClassName('answerspan') === null ? [] : studentBody.getElementsByClassName('answerspan')
-        const answersource = studentBody.getElementsByClassName('answersource') === null ? [] : studentBody.getElementsByClassName('answersource')
         const sourcespan = studentBody.getElementsByClassName('sourcespan') === null ? [] : studentBody.getElementsByClassName('sourcespan')
 
         const answerSpanContents = []
-        const answerSourceContents = []
         const sourceSpanContents = []
 
         for (let i = 0; i < answerspan.length; i++) {
             let content = answerspan[0].innerHTML;
             if (content.includes("<br>")) content = content.replaceAll("<br>", "\n");
             answerSpanContents.push(
-                content
-            );
-        }
-
-        for (let i = 0; i < answersource.length; i++) {
-            let content = answersource[0].innerHTML;
-            if (content.includes("<br>")) content = content.replaceAll("<br>", "\n");
-            answerSourceContents.push(
                 content
             );
         }
@@ -325,22 +297,21 @@ function Studio(runtime, element) {
 
         const answerContents = {
             answerSpan: answerSpanContents,
-            answerSource: answerSourceContents,
             sourceSpan: sourceSpanContents
         }
         console.log("🚀 ~ file: studio.js ~ line 264 ~ getAnswerContent ~ answerContents", answerContents)
         return answerContents;
     }
 
-    tinymce.init({
+    $('#tinymce').tinymce({
         force_br_newlines: true,
         force_p_newlines: false,
         selector: "#tinymce",
         height: "500px",
         plugins: [
-            "code, contextmenu, image, searchreplace, textcolor, table, answerspan, sourcespan, sample, badge, exclude, hidden, answersource, studentpreview, hiddensource"
+            "code, contextmenu, image, searchreplace, textcolor, table, answerspan, sourcespan, sample, badge, studentpreview, hiddensource, hidespan"
         ],
-        toolbar: "forecolor | bold italic underline | example | code | removeformat | searchreplace | table | alignleft aligncenter alignright alignfull | badge sample | answerspan answersource | hiddensource sourcespan | studentpreview",
+        toolbar: "forecolor | bold italic underline | example | code | removeformat | searchreplace | table | alignleft aligncenter alignright alignfull | badge sample | answerspan | hiddensource sourcespan hidespan | studentpreview",
         contextmenu: "bold italic",
         formats: {
             badge: {
@@ -358,38 +329,28 @@ function Studio(runtime, element) {
                 styles: tinymceCSS.answerspan,
                 classes: 'answerspan'
             },
-            answersource: {
-                inline: 'span',
-                styles: tinymceCSS.answersource,
-                classes: 'answersource'
-            },
             sourcespan: {
                 inline: 'span',
                 styles: tinymceCSS.sourcespan,
                 classes: 'sourcespan'
             },
-            hiddensource:{
-                inline: 'span',
+            hiddensource: {
+                block: 'div',
                 styles: tinymceCSS.hiddensource,
                 classes: 'hiddensource'
             },
-            exclude: {
+            hidespan: {
                 inline: 'span',
-                styles: tinymceCSS.exclude,
-                classes: 'exclude'
-            },
-            hidden: {
-                inline: 'span',
-                styles: tinymceCSS.hidden,
-                classes: 'hidden'
+                styles: tinymceCSS.hidespan,
+                classes: 'hidespan'
             }
         },
         setup: (ed) => {
             ed.on("paste", function (e) {
                 if (tinymce.activeEditor.selection.getNode().tagName.toLowerCase() === "span") {
-                    e.preventDefault();
                     const text = (e.originalEvent || e).clipboardData.getData('text/plain');
                     tinymce.activeEditor.selection.setContent(text.replace(/\n/g, "<br>"))
+                    e.preventDefault()
                 }
             })
 
@@ -399,13 +360,19 @@ function Studio(runtime, element) {
                     tinymce.activeEditor.selection.setContent("<br/>")
                     e.preventDefault()
                 }
-
-                //tab case
-                if (e.key === "Tab" && !e.shiftKey) {
-                    tinymce.activeEditor.selection.setContent("\t")
-                    e.preventDefault()
-                }
             });
+
+            //disable drag
+            ed.on('dragover dragenter dragend drag drop', function (e) {
+                e.stopPropagation();
+                e.preventDefault()
+            });
+
+            ed.on('draggesture', function (e) {
+                e.stopPropagation();
+                e.preventDefault()
+            });
+
         }
     });
 
@@ -442,40 +409,27 @@ class TinymceCSS {
         paddingRight: '2px',
         paddingLeft: '2px',
     }
-    answersource = {
-        'background-color': '#ffedba',
-        color: 'gray',
-        border: '1px solid black',
-        display: 'inline-block',
-        'border-radius': '3px',
-        paddingRight: '2px',
-        paddingLeft: '2px',
-    }
     sourcespan = {
-        width: '100%',
         'background-color': '#ffedba',
         color: 'gray',
         display: 'inline-block',
         'border-radius': '3px'
     }
     hiddensource = {
-        width: '100%',
-        'background-color': '#deccff',
-        color: 'gray',
+        padding: '16px',
+        margin: '0 auto',
+        position: 'relative',
+        left: '0',
+        right: '0',
+        width: 'auto',
+        'font-family': '"Consolas", "Lucida Console", Monaco, monospace',
+        'background-color': '#ffffff',
         border: '1px solid black',
-        display: 'inline-block',
         'border-radius': '3px'
     }
-    exclude = {
-        color: 'rgb(16, 133, 70, 0.7)',
+    hidespan = {
+        color: 'rgba(107,107,107,0.7)',
         display: 'inline-block',
-        'border-radius': '3px',
-        fontWeight: 'bold'
-    }
-    hidden = {
-        color: 'rgb(110, 20, 156, 0.7)',
-        display: 'inline-block',
-        'border-radius': '3px',
-        fontWeight: 'bold'
+        'background-color': '#dedede',
     }
 }

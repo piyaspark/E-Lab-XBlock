@@ -47,10 +47,8 @@ function Student(runtime, element) {
 
     const getStudentInputs = () => {
         const answerSpan = []
-        const answerSource = []
         const sourceSpan = []
         const answerSpanIp = document.getElementById('currentDiv').getElementsByClassName('answerspanInput')
-        const answerSourceIp = document.getElementById('currentDiv').getElementsByClassName('answersourceInput')
         const sourceSpanIp = document.getElementById('currentDiv').getElementsByClassName('sourcespanInput')
 
         for (let i = 0; i < answerSpanIp.length; i++) {
@@ -60,13 +58,6 @@ function Student(runtime, element) {
             );
         }
 
-        for (let i = 0; i < answerSourceIp.length; i++) {
-            let content = answerSourceIp[i].value;
-            answerSource.push(
-                content
-            );
-        }
-
         for (let i = 0; i < sourceSpanIp.length; i++) {
             let content = sourceSpanIp[i].value;
             sourceSpan.push(
@@ -74,21 +65,16 @@ function Student(runtime, element) {
             );
         }
 
-        const answerContents = {
+        return {
             answerSpan,
-            answerSource,
             sourceSpan
-        }
-
-        return answerContents;
+        };
     }
 
     const getRecentInputs = () => {
         const answerSpan = []
-        const answerSource = []
         const sourceSpan = []
         const answerSpanIp = document.getElementById('recentDiv').getElementsByClassName('answerspanInput')
-        const answerSourceIp = document.getElementById('recentDiv').getElementsByClassName('answersourceInput')
         const sourceSpanIp = document.getElementById('recentDiv').getElementsByClassName('sourcespanInput')
 
         for (let i = 0; i < answerSpanIp.length; i++) {
@@ -98,13 +84,6 @@ function Student(runtime, element) {
             );
         }
 
-        for (let i = 0; i < answerSourceIp.length; i++) {
-            let content = answerSourceIp[i].value;
-            answerSource.push(
-                content
-            );
-        }
-
         for (let i = 0; i < sourceSpanIp.length; i++) {
             let content = sourceSpanIp[i].value;
             sourceSpan.push(
@@ -112,31 +91,23 @@ function Student(runtime, element) {
             );
         }
 
-        const answerContents = {
+        return {
             answerSpan,
-            answerSource,
             sourceSpan
-        }
-
-        return answerContents;
+        };
     }
 
 }
 
 
 const setStudentsInputs = (studentInput) => {
-    const {answerSpan, answerSource, sourceSpan} = studentInput
+    const {answerSpan, sourceSpan} = studentInput
 
     const answerSpanIp = document.getElementById('currentDiv').getElementsByClassName('answerspanInput')
-    const answerSourceIp = document.getElementById('currentDiv').getElementsByClassName('answersourceInput')
     const sourceSpanIp = document.getElementById('currentDiv').getElementsByClassName('sourcespanInput')
 
     for (let i = 0; i < answerSpanIp.length; i++) {
         answerSpanIp[i].value = answerSpan[i];
-    }
-
-    for (let i = 0; i < answerSourceIp.length; i++) {
-        answerSourceIp[i].value = answerSource[i];
     }
 
     for (let i = 0; i < sourceSpanIp.length; i++) {
@@ -145,18 +116,13 @@ const setStudentsInputs = (studentInput) => {
 }
 
 const setRecentInputs = (studentInput) => {
-    const {answerSpan, answerSource, sourceSpan} = studentInput
+    const {answerSpan, sourceSpan} = studentInput
 
     const answerSpanIp = document.getElementById('recentDiv').getElementsByClassName('answerspanInput')
-    const answerSourceIp = document.getElementById('recentDiv').getElementsByClassName('answersourceInput')
     const sourceSpanIp = document.getElementById('recentDiv').getElementsByClassName('sourcespanInput')
 
     for (let i = 0; i < answerSpanIp.length; i++) {
         answerSpanIp[i].value = answerSpan[i];
-    }
-
-    for (let i = 0; i < answerSourceIp.length; i++) {
-        answerSourceIp[i].value = answerSource[i];
     }
 
     for (let i = 0; i < sourceSpanIp.length; i++) {
