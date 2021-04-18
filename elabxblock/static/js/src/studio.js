@@ -1,5 +1,5 @@
 /* Javascript for ELabXBlock. */
-function Studio(runtime, element) {
+function ELabXBlock(runtime, element) {
 
     const saveStatus = (result) => {
         if (result.success === 1) {
