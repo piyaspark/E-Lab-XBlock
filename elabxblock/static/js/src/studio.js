@@ -1,6 +1,83 @@
 /* Javascript for ELabXBlock. */
 function ELabXBlock(runtime, element) {
 
+    $(function ($) {
+        /* Here's where you'd do things on page load. */
+        console.log("initialize")
+        $('#tinymce').tinymce({
+            force_br_newlines: true,
+            force_p_newlines: false,
+            selector: "#tinymce",
+            height: "500px",
+            plugins: [
+                "code, contextmenu, image, searchreplace, textcolor, table, answerspan, sourcespan, sample, badge, studentpreview, hiddensource, hidespan"
+            ],
+            toolbar: "forecolor | bold italic underline | example | code | removeformat | searchreplace | table | alignleft aligncenter alignright alignfull | badge sample | answerspan | hiddensource sourcespan hidespan | studentpreview",
+            contextmenu: "bold italic",
+            formats: {
+                badge: {
+                    inline: 'span',
+                    styles: tinymceCSS.badge,
+                    classes: 'badge'
+                },
+                sample: {
+                    inline: 'span',
+                    styles: tinymceCSS.sample,
+                    classes: 'sample'
+                },
+                answerspan: {
+                    inline: 'span',
+                    styles: tinymceCSS.answerspan,
+                    classes: 'answerspan'
+                },
+                sourcespan: {
+                    inline: 'span',
+                    styles: tinymceCSS.sourcespan,
+                    classes: 'sourcespan'
+                },
+                hiddensource: {
+                    block: 'div',
+                    styles: tinymceCSS.hiddensource,
+                    classes: 'hiddensource'
+                },
+                hidespan: {
+                    inline: 'span',
+                    styles: tinymceCSS.hidespan,
+                    classes: 'hidespan'
+                }
+            },
+            setup: (ed) => {
+                ed.on("paste", function (e) {
+                    if (tinymce.activeEditor.selection.getNode().tagName.toLowerCase() === "span") {
+                        const text = (e.originalEvent || e).clipboardData.getData('text/plain');
+                        tinymce.activeEditor.selection.setContent(text.replace(/\n/g, "<br>"))
+                        e.preventDefault()
+                    }
+                })
+    
+                ed.on('keydown', function (e) {
+                    //enter case for span
+                    if (e.key === "Enter" && !e.ctrlKey && tinymce.activeEditor.selection.getNode().tagName.toLowerCase() === "span") {
+                        tinymce.activeEditor.selection.setContent("<br/>")
+                        e.preventDefault()
+                    }
+                });
+    
+                //disable drag
+                ed.on('dragover dragenter dragend drag drop', function (e) {
+                    e.stopPropagation();
+                    e.preventDefault()
+                });
+    
+                ed.on('draggesture', function (e) {
+                    e.stopPropagation();
+                    e.preventDefault()
+                });
+    
+            }
+        });
+    });
+
     const saveStatus = (result) => {
         if (result.success === 1) {
             alert("Save Success")
@@ -303,78 +380,7 @@ function ELabXBlock(runtime, element) {
         return answerContents;
     }
 
-    $('#tinymce').tinymce({
-        force_br_newlines: true,
-        force_p_newlines: false,
-        selector: "#tinymce",
-        height: "500px",
-        plugins: [
-            "code, contextmenu, image, searchreplace, textcolor, table, answerspan, sourcespan, sample, badge, studentpreview, hiddensource, hidespan"
-        ],
-        toolbar: "forecolor | bold italic underline | example | code | removeformat | searchreplace | table | alignleft aligncenter alignright alignfull | badge sample | answerspan | hiddensource sourcespan hidespan | studentpreview",
-        contextmenu: "bold italic",
-        formats: {
-            badge: {
-                inline: 'span',
-                styles: tinymceCSS.badge,
-                classes: 'badge'
-            },
-            sample: {
-                inline: 'span',
-                styles: tinymceCSS.sample,
-                classes: 'sample'
-            },
-            answerspan: {
-                inline: 'span',
-                styles: tinymceCSS.answerspan,
-                classes: 'answerspan'
-            },
-            sourcespan: {
-                inline: 'span',
-                styles: tinymceCSS.sourcespan,
-                classes: 'sourcespan'
-            },
-            hiddensource: {
-                block: 'div',
-                styles: tinymceCSS.hiddensource,
-                classes: 'hiddensource'
-            },
-            hidespan: {
-                inline: 'span',
-                styles: tinymceCSS.hidespan,
-                classes: 'hidespan'
-            }
-        },
-        setup: (ed) => {
-            ed.on("paste", function (e) {
-                if (tinymce.activeEditor.selection.getNode().tagName.toLowerCase() === "span") {
-                    const text = (e.originalEvent || e).clipboardData.getData('text/plain');
-                    tinymce.activeEditor.selection.setContent(text.replace(/\n/g, "<br>"))
-                    e.preventDefault()
-                }
-            })
-
-            ed.on('keydown', function (e) {
-                //enter case for span
-                if (e.key === "Enter" && !e.ctrlKey && tinymce.activeEditor.selection.getNode().tagName.toLowerCase() === "span") {
-                    tinymce.activeEditor.selection.setContent("<br/>")
-                    e.preventDefault()
-                }
-            });
-
-            //disable drag
-            ed.on('dragover dragenter dragend drag drop', function (e) {
-                e.stopPropagation();
-                e.preventDefault()
-            });
-
-            ed.on('draggesture', function (e) {
-                e.stopPropagation();
-                e.preventDefault()
-            });
-
-        }
-    });
+    
 
 }
 
