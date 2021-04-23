@@ -1,6 +1,7 @@
 <div>
-    <script src="https://cdn.tiny.cloud/1/qs9hpf1exzjcx253ebg14qjvssqeobiotqcxuu286ahzipqx/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
-    
+    <script referrerpolicy="origin"
+            src="https://cdn.tiny.cloud/1/qs9hpf1exzjcx253ebg14qjvssqeobiotqcxuu286ahzipqx/tinymce/5/tinymce.min.js"></script>
+
     <h1 class="my-2">Title</h1>
     <input class="w-full text-lg" id="title" placeholder="Title" value="{{title}}"/>
     <h3 class="my-2">Description</h3>
@@ -68,7 +69,6 @@
     </div>
 
     <script type="text/javascript">
-
         const tinymceCSS = {
             badge: {
                 display: 'inline-block',
@@ -102,7 +102,7 @@
                 display: 'inline-block',
                 'border-radius': '3px'
             },
-            hiddensource:{
+            hiddensource: {
                 padding: '16px',
                 margin: '0 auto',
                 position: 'relative',
@@ -120,206 +120,260 @@
                 'background-color': '#dedede',
             }
         }
-        
-        
-                //badge
-            tinymce.PluginManager.add('badge', function (editor, url) {
-                const toggleSpan = () => {
-                    if (editor.selection.getNode().tagName.toLowerCase() === "span") return
-                    editor.formatter.toggle('badge');
+
+        const replaceCSSToString = (css) => {
+            return JSON.stringify(css).replaceAll("}", "").replaceAll("{", "").replaceAll("\"", "").replaceAll(",", ";")
+        }
+
+        const toStudentContent2 = (body) => {
+            const studentBody = body.cloneNode(true)
+
+            const answerspan = studentBody.getElementsByClassName('answerspan')
+            const answerspanLength = answerspan.length
+            const sourcespan = studentBody.getElementsByClassName('sourcespan')
+            const sourcespanLength = sourcespan.length
+            const hiddensource = studentBody.getElementsByClassName('hiddensource')
+
+            for (let i = 0; i < answerspanLength; i++) {
+                if (answerspan[0].innerHTML.includes("<br>")) {
+                    answerspan[0].outerHTML = `<textarea class='answerspanInput' placeholder='answer here' style='padding-left: 2px;background-color: #ADFFEE; border: 1px solid black; height:${(answerspan[0].innerHTML.match(/br/g) || []).length * 25}px;' />`
+                } else {
+                    answerspan[0].outerHTML = `<input type='text' class="answerspanInput" placeholder="answer here" style='padding-left: 2px;background-color: #ADFFEE; border: 1px solid black;'/>`
                 }
-        
-                editor.ui.registry.addButton('badge', {
-                    text: 'Badge',
-                    onAction: function () {
-                        toggleSpan();
-                    }
-                });
-            });
-        
-            //sample
-            tinymce.PluginManager.add('sample', function (editor, url) {
-                const toggleSpan = () => {
-                    if (editor.selection.getNode().tagName.toLowerCase() === "span") return
-                    editor.formatter.toggle('sample');
+            }
+            for (let i = 0; i < sourcespanLength; i++) {
+                if (sourcespan[0].innerHTML.includes("<br>")) {
+                    sourcespan[0].outerHTML = `<textarea  class="sourcespanInput"  placeholder="source code here" style='padding-left: 2px; padding-right 2px; height: ${((sourcespan[0].innerHTML.match(/br/g) || []).length * 25) + 50}px; background-color: #ffedba; border: 1px solid black;'/>`
+                } else {
+                    sourcespan[0].outerHTML = `<input type='text' class="sourcespanInput"  placeholder="answer here" style='padding-left: 2px; padding-right 2px; background-color: #ffedba; border: 1px solid black;'/>`
                 }
-        
-                editor.ui.registry.addButton('sample', {
-                    text: 'Sample',
-                    onAction: function () {
-                        toggleSpan();
+            }
+
+            for (let i = 0; i < hiddensource.length; i++) {
+                for (let j = 0; j < hiddensource[i].children.length; j++) {
+                    const className = hiddensource[i].children[j].className
+                    if (className === "hidespan") {
+                        hiddensource[i].children[j].style.display = 'none'
+                        if (j + 1 < hiddensource[i].children.length)
+                            hiddensource[i].children[j + 1].remove()
                     }
-                });
-            });
-        
-            //answerspan
-            tinymce.PluginManager.add('answerspan', function (editor, url) {
-                const toggleSpan = () => {
-                    if (editor.selection.getNode().tagName.toLowerCase() === "span") return
-                    insertSelectionWithCss(editor, tinymceCSS.answerspan, 'answerspan')
-                    // tinymce.activeEditor.formatter.toggle('answerspan');
                 }
-        
-                editor.ui.registry.addButton('answerspan', {
-                    text: 'Answer Text',
-                    onAction: function () {
-                        toggleSpan();
-                    }
-                });
-            });
-        
-            //sourcespan
-            tinymce.PluginManager.add('sourcespan', function (editor, url) {
-                const toggleSpan = () => {
-        
-                    if (editor.selection.getNode().className.toLowerCase() !== "hiddensource") return
-        
-                    // tinymce.activeEditor.formatter.toggle('sourcespan');
-                    insertSelectionWithCss(editor, tinymceCSS.sourcespan, 'sourcespan', true)
+            }
+
+            return studentBody.outerHTML
+        }
+
+        const insertSelectionWithCss = (editor, css, cl, checkBr = false) => {
+            const selection = editor.selection.getContent()
+            const node = editor.selection.getNode()
+            console.log(node.childNodes[node.childNodes.length - 1].nodeName !== "BR")
+            const styles = replaceCSSToString(css)
+            if (selection.includes("span")) return;
+            if (checkBr && node.childNodes[node.childNodes.length - 1].nodeName !== "BR") {
+                editor.selection.setContent("<span class='" + cl + "' style='" + styles + "' >" + selection + "</span><br>")
+            } else {
+                editor.selection.setContent("<span class='" + cl + "' style='" + styles + "' >" + selection + "</span>")
+            }
+        }
+
+        //badge
+        tinymce.PluginManager.add('badge', function (editor, url) {
+            const toggleSpan = () => {
+                if (editor.selection.getNode().tagName.toLowerCase() === "span") return
+                editor.formatter.toggle('badge');
+            }
+
+            editor.ui.registry.addButton('badge', {
+                text: 'Badge',
+                onAction: function () {
+                    toggleSpan();
                 }
-        
-                editor.ui.registry.addButton('sourcespan', {
-                    text: 'Student Source',
-                    onAction: function () {
-                        toggleSpan();
-                    }
-                });
             });
-        
-            //hidespan
-            tinymce.PluginManager.add('hidespan', function (editor, url) {
-                const toggleSpan = () => {
-                    if (editor.selection.getNode().className.toLowerCase() !== "hiddensource") return
-                    editor.formatter.toggle('hidespan');
+        });
+
+        //sample
+        tinymce.PluginManager.add('sample', function (editor, url) {
+            const toggleSpan = () => {
+                if (editor.selection.getNode().tagName.toLowerCase() === "span") return
+                editor.formatter.toggle('sample');
+            }
+
+            editor.ui.registry.addButton('sample', {
+                text: 'Sample',
+                onAction: function () {
+                    toggleSpan();
                 }
-        
-                editor.ui.registry.addButton('hidespan', {
-                    text: 'Hide',
-                    onAction: function () {
-                        toggleSpan();
-                    }
-                });
             });
-        
-            //hiddensource
-            tinymce.PluginManager.add('hiddensource', function (editor, url) {
-                const toggleSpan = () => {
-                    if (editor.selection.getNode().tagName.toLowerCase() === "span") return
-                    editor.formatter.apply('hiddensource');
+        });
+
+        //answerspan
+        tinymce.PluginManager.add('answerspan', function (editor, url) {
+            const toggleSpan = () => {
+                if (editor.selection.getNode().tagName.toLowerCase() === "span") return
+                insertSelectionWithCss(editor, tinymceCSS.answerspan, 'answerspan')
+                // tinymce.activeEditor.formatter.toggle('answerspan');
+            }
+
+            editor.ui.registry.addButton('answerspan', {
+                text: 'Answer Text',
+                onAction: function () {
+                    toggleSpan();
                 }
-        
-                editor.ui.registry.addButton('hiddensource', {
-                    text: 'Source Code',
-                    onAction: function () {
-                        toggleSpan();
-                    }
-                });
             });
-        
-            //student preview
-            tinymce.PluginManager.add('studentpreview', function (editor, url) {
-                const previewDialog = () => {
-                    return editor.windowManager.open({
-                        title: 'Student Preview',
-                        size: 'large',
-                        body: {
-                            type: 'panel',
-                            items: [{
-                                type: 'iframe',
-                                name: 'iframe',
-                                sandboxed: false
-                            }]
-                        },
-                        buttons: [{
-                            type: 'cancel',
-                            text: 'Close',
-                            primary: true
-                        }],
-                    }).setData({
-                        iframe: toStudentContent(editor.getBody())
-                    })
+        });
+
+        //sourcespan
+        tinymce.PluginManager.add('sourcespan', function (editor, url) {
+            const toggleSpan = () => {
+
+                if (editor.selection.getNode().className.toLowerCase() !== "hiddensource") return
+
+                // tinymce.activeEditor.formatter.toggle('sourcespan');
+                insertSelectionWithCss(editor, tinymceCSS.sourcespan, 'sourcespan', true)
+            }
+
+            editor.ui.registry.addButton('sourcespan', {
+                text: 'Student Source',
+                onAction: function () {
+                    toggleSpan();
                 }
-        
-                editor.ui.registry.addButton('studentpreview', {
-                    text: 'Student Preview',
-                    onAction: function () {
-                        previewDialog();
-                    }
-                });
             });
-        
-            tinymce.init({
-                force_br_newlines: true,
-                force_p_newlines: false,
-                selector: "#tinymce",
-                height: "500px",
-                plugins: [
-                    "code, contextmenu, image, searchreplace, textcolor, table, answerspan, sourcespan, sample, badge, studentpreview, hiddensource, hidespan"
-                ],
-                toolbar: "forecolor | bold italic underline | example | code | removeformat | searchreplace | table | alignleft aligncenter alignright alignfull | badge sample | answerspan | hiddensource sourcespan hidespan | studentpreview",
-                contextmenu: "bold italic",
-                formats: {
-                    badge: {
-                        inline: 'span',
-                        styles: tinymceCSS.badge,
-                        classes: 'badge'
+        });
+
+        //hidespan
+        tinymce.PluginManager.add('hidespan', function (editor, url) {
+            const toggleSpan = () => {
+                if (editor.selection.getNode().className.toLowerCase() !== "hiddensource") return
+                editor.formatter.toggle('hidespan');
+            }
+
+            editor.ui.registry.addButton('hidespan', {
+                text: 'Hide',
+                onAction: function () {
+                    toggleSpan();
+                }
+            });
+        });
+
+        //hiddensource
+        tinymce.PluginManager.add('hiddensource', function (editor, url) {
+            const toggleSpan = () => {
+                if (editor.selection.getNode().tagName.toLowerCase() === "span") return
+                editor.formatter.apply('hiddensource');
+            }
+
+            editor.ui.registry.addButton('hiddensource', {
+                text: 'Source Code',
+                onAction: function () {
+                    toggleSpan();
+                }
+            });
+        });
+
+        //student preview
+        tinymce.PluginManager.add('studentpreview', function (editor, url) {
+            const previewDialog = () => {
+                return editor.windowManager.open({
+                    title: 'Student Preview',
+                    size: 'large',
+                    body: {
+                        type: 'panel',
+                        items: [{
+                            type: 'iframe',
+                            name: 'iframe',
+                            sandboxed: false
+                        }]
                     },
-                    sample: {
-                        inline: 'span',
-                        styles: tinymceCSS.sample,
-                        classes: 'sample'
-                    },
-                    answerspan: {
-                        inline: 'span',
-                        styles: tinymceCSS.answerspan,
-                        classes: 'answerspan'
-                    },
-                    sourcespan: {
-                        inline: 'span',
-                        styles: tinymceCSS.sourcespan,
-                        classes: 'sourcespan'
-                    },
-                    hiddensource: {
-                        block: 'div',
-                        styles: tinymceCSS.hiddensource,
-                        classes: 'hiddensource'
-                    },
-                    hidespan: {
-                        inline: 'span',
-                        styles: tinymceCSS.hidespan,
-                        classes: 'hidespan'
-                    }
+                    buttons: [{
+                        type: 'cancel',
+                        text: 'Close',
+                        primary: true
+                    }],
+                }).setData({
+                    iframe: toStudentContent2(editor.getBody())
+                })
+            }
+
+            editor.ui.registry.addButton('studentpreview', {
+                text: 'Student Preview',
+                onAction: function () {
+                    previewDialog();
+                }
+            });
+        });
+
+        tinymce.init({
+            force_br_newlines: true,
+            force_p_newlines: false,
+            selector: "#tinymce",
+            height: "500px",
+            plugins: [
+                "code, contextmenu, image, searchreplace, textcolor, table, answerspan, sourcespan, sample, badge, studentpreview, hiddensource, hidespan"
+            ],
+            toolbar: "forecolor | bold italic underline | example | code | removeformat | searchreplace | table | alignleft aligncenter alignright alignfull | badge sample | answerspan | hiddensource sourcespan hidespan | studentpreview",
+            contextmenu: "bold italic",
+            formats: {
+                badge: {
+                    inline: 'span',
+                    styles: tinymceCSS.badge,
+                    classes: 'badge'
                 },
-                setup: (ed) => {
-                    ed.on("paste", function (e) {
-                        if (tinymce.activeEditor.selection.getNode().tagName.toLowerCase() === "span") {
-                            const text = (e.originalEvent || e).clipboardData.getData('text/plain');
-                            tinymce.activeEditor.selection.setContent(text.replace(/\n/g, "<br>"))
-                            e.preventDefault()
-                        }
-                    })
-        
-                    ed.on('keydown', function (e) {
-                        //enter case for span
-                        if (e.key === "Enter" && !e.ctrlKey && tinymce.activeEditor.selection.getNode().tagName.toLowerCase() === "span") {
-                            tinymce.activeEditor.selection.setContent("<br/>")
-                            e.preventDefault()
-                        }
-                    });
-        
-                    //disable drag
-                    ed.on('dragover dragenter dragend drag drop', function (e) {
-                        e.stopPropagation();
-                        e.preventDefault()
-                    });
-        
-                    ed.on('draggesture', function (e) {
-                        e.stopPropagation();
-                        e.preventDefault()
-                    });
-        
+                sample: {
+                    inline: 'span',
+                    styles: tinymceCSS.sample,
+                    classes: 'sample'
+                },
+                answerspan: {
+                    inline: 'span',
+                    styles: tinymceCSS.answerspan,
+                    classes: 'answerspan'
+                },
+                sourcespan: {
+                    inline: 'span',
+                    styles: tinymceCSS.sourcespan,
+                    classes: 'sourcespan'
+                },
+                hiddensource: {
+                    block: 'div',
+                    styles: tinymceCSS.hiddensource,
+                    classes: 'hiddensource'
+                },
+                hidespan: {
+                    inline: 'span',
+                    styles: tinymceCSS.hidespan,
+                    classes: 'hidespan'
                 }
-            });
-                </script>
+            },
+            setup: (ed) => {
+                ed.on("paste", function (e) {
+                    if (ed.selection.getNode().tagName.toLowerCase() === "span") {
+                        const text = (e.originalEvent || e).clipboardData.getData('text/plain');
+                        ed.selection.setContent(text.replace(/\n/g, "<br>"))
+                        e.preventDefault()
+                    }
+                })
+
+                ed.on('keydown', function (e) {
+                    //enter case for span
+                    if (e.key === "Enter" && !e.ctrlKey && ed.selection.getNode().tagName.toLowerCase() === "span") {
+                        ed.selection.setContent("<br/>")
+                        e.preventDefault()
+                    }
+                });
+
+                //disable drag
+                ed.on('dragover dragenter dragend drag drop', function (e) {
+                    e.stopPropagation();
+                    e.preventDefault()
+                });
+
+                ed.on('draggesture', function (e) {
+                    e.stopPropagation();
+                    e.preventDefault()
+                });
+
+            }
+        });
+    </script>
 
 </div>

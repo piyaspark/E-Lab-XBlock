@@ -76,24 +76,6 @@ function removeInput(param) {
     param.parentNode.remove()
 }
 
-const replaceCSSToString = (css) => {
-    return JSON.stringify(css).replaceAll("}", "").replaceAll("{", "").replaceAll("\"", "").replaceAll(",", ";")
-}
-
-const insertSelectionWithCss = (editor, css, cl, checkBr = false) => {
-    const selection = tinymce.activeEditor.selection.getContent()
-    const node = tinymce.activeEditor.selection.getNode()
-    console.log(node.childNodes[node.childNodes.length - 1].nodeName !== "BR")
-    const styles = replaceCSSToString(css)
-    if (selection.includes("span")) return;
-    if (checkBr && node.childNodes[node.childNodes.length - 1].nodeName !== "BR") {
-        tinymce.activeEditor.selection.setContent("<span class='" + cl + "' style='" + styles + "' >" + selection + "</span><br>")
-    } else {
-        tinymce.activeEditor.selection.setContent("<span class='" + cl + "' style='" + styles + "' >" + selection + "</span>")
-    }
-}
-
-
 const toStudentContent = (body) => {
     const studentBody = body.cloneNode(true)
 
