@@ -125,8 +125,8 @@
                 //badge
             tinymce.PluginManager.add('badge', function (editor, url) {
                 const toggleSpan = () => {
-                    if (tinymce.activeEditor.selection.getNode().tagName.toLowerCase() === "span") return
-                    tinymce.activeEditor.formatter.toggle('badge');
+                    if (editor.selection.getNode().tagName.toLowerCase() === "span") return
+                    editor.formatter.toggle('badge');
                 }
         
                 editor.ui.registry.addButton('badge', {
@@ -140,8 +140,8 @@
             //sample
             tinymce.PluginManager.add('sample', function (editor, url) {
                 const toggleSpan = () => {
-                    if (tinymce.activeEditor.selection.getNode().tagName.toLowerCase() === "span") return
-                    tinymce.activeEditor.formatter.toggle('sample');
+                    if (editor.selection.getNode().tagName.toLowerCase() === "span") return
+                    editor.formatter.toggle('sample');
                 }
         
                 editor.ui.registry.addButton('sample', {
@@ -155,7 +155,7 @@
             //answerspan
             tinymce.PluginManager.add('answerspan', function (editor, url) {
                 const toggleSpan = () => {
-                    if (tinymce.activeEditor.selection.getNode().tagName.toLowerCase() === "span") return
+                    if (editor.selection.getNode().tagName.toLowerCase() === "span") return
                     insertSelectionWithCss(editor, tinymceCSS.answerspan, 'answerspan')
                     // tinymce.activeEditor.formatter.toggle('answerspan');
                 }
@@ -172,7 +172,7 @@
             tinymce.PluginManager.add('sourcespan', function (editor, url) {
                 const toggleSpan = () => {
         
-                    if (tinymce.activeEditor.selection.getNode().className.toLowerCase() !== "hiddensource") return
+                    if (editor.selection.getNode().className.toLowerCase() !== "hiddensource") return
         
                     // tinymce.activeEditor.formatter.toggle('sourcespan');
                     insertSelectionWithCss(editor, tinymceCSS.sourcespan, 'sourcespan', true)
@@ -189,8 +189,8 @@
             //hidespan
             tinymce.PluginManager.add('hidespan', function (editor, url) {
                 const toggleSpan = () => {
-                    if (tinymce.activeEditor.selection.getNode().className.toLowerCase() !== "hiddensource") return
-                    tinymce.activeEditor.formatter.toggle('hidespan');
+                    if (editor.selection.getNode().className.toLowerCase() !== "hiddensource") return
+                    editor.formatter.toggle('hidespan');
                 }
         
                 editor.ui.registry.addButton('hidespan', {
@@ -204,8 +204,8 @@
             //hiddensource
             tinymce.PluginManager.add('hiddensource', function (editor, url) {
                 const toggleSpan = () => {
-                    if (tinymce.activeEditor.selection.getNode().tagName.toLowerCase() === "span") return
-                    tinymce.activeEditor.formatter.apply('hiddensource');
+                    if (editor.selection.getNode().tagName.toLowerCase() === "span") return
+                    editor.formatter.apply('hiddensource');
                 }
         
                 editor.ui.registry.addButton('hiddensource', {
@@ -236,7 +236,7 @@
                             primary: true
                         }],
                     }).setData({
-                        iframe: toStudentContent(tinymce.activeEditor.getBody())
+                        iframe: toStudentContent(editor.getBody())
                     })
                 }
         
