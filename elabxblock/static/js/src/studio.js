@@ -44,7 +44,7 @@ function Studio(runtime, element) {
         // const tmce = tinymce.activeEditor.getBody()
         const studentBody = `<div contenteditable="false">${toStudentContent(tinymce.activeEditor.getBody())}</div>`;
 
-        // runtime.notify('save', {state: 'start'})
+        runtime.notify('save', {state: 'start'})
         $.ajax({
             type: "POST",
             url: handleSaveUrl,
@@ -61,7 +61,7 @@ function Studio(runtime, element) {
             }),
             success: saveStatus
         }).done(function (response) {
-            // runtime.notify('save', {state: 'end'})
+            runtime.notify('save', {state: 'end'})
         })
     });
 
