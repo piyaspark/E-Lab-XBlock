@@ -35,7 +35,7 @@ class ELabXBlock(XBlock):
     editor_content = String(default="<div></div>", scope=Scope.content)
     input_list = List(default=[{'i': 0, 'value': ''}], scope=Scope.content)
     student_contents = String(default="<div></div>", scope=Scope.content)
-    answer_contents = String(default="", scope=Scope.content)
+    answer_contents = Dict(default="", scope=Scope.content)
 
     student_inputs = Dict(default={}, scope=Scope.content)
 
