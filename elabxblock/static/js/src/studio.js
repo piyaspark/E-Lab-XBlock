@@ -38,11 +38,19 @@ function Studio(runtime, element) {
                 inputs.push(listInput[i].value)
         }
 
+        const frameObj = document.getElementsByTagName("IFRAME")[0];
+        const body = frameObj.contentWindow.document.body;
+        const editorContent = body.innerHTML;
+        
         //get answer content then post request to API
-        const answerContent = getAnswerContent(tinymce.activeEditor.getBody());
+        // const answerContent = getAnswerContent(tinymce.activeEditor.getBody());
+        const answerContent = getAnswerContent(body);
+        console.log(answerContent)
 
         // const tmce = tinymce.activeEditor.getBody()
-        const studentBody = `<div contenteditable="false">${toStudentContent(tinymce.activeEditor.getBody())}</div>`;
+        // const studentBody = `<div contenteditable="false">${toStudentContent(tinymce.activeEditor.getBody())}</div>`;
+        const studentBody = `<div contenteditable="false">${toStudentContent(body)}</div>`;
+        console.log(studentBody)
 
         runtime.notify('save', {state: 'start'})
         $.ajax({
@@ -55,7 +63,7 @@ function Studio(runtime, element) {
                 memory_limit: memoryLimit,
                 programing_language: programingLanguage,
                 listInput: listInput.length === 0 ? [""] : inputs,
-                editor_content: tinymce.activeEditor.getContent(),
+                editor_content: editorContent,
                 student_content: studentBody,
                 answer_content: answerContent
             }),
