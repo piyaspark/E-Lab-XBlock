@@ -74,7 +74,7 @@ function Studio(runtime, element) {
     });
 
     $(element).find('.cancel-button').bind('click', function () {
-        // console.log('Cancel button clicked')
+        console.log('Cancel button clicked')
         runtime.notify('cancel', {});
     });
 
@@ -91,7 +91,7 @@ const toStudentContent = (body) => {
     const answerspanLength = answerspan.length
     const sourcespan = studentBody.getElementsByClassName('sourcespan')
     const sourcespanLength = sourcespan.length
-    const hiddensource = studentBody.getElementsByClassName('hiddensource')
+    const sourcecode = studentBody.getElementsByClassName('sourcecode')
 
     for (let i = 0; i < answerspanLength; i++) {
         if (answerspan[0].innerHTML.includes("<br>")) {
@@ -108,13 +108,13 @@ const toStudentContent = (body) => {
         }
     }
 
-    for (let i = 0; i < hiddensource.length; i++) {
-        for (let j = 0; j < hiddensource[i].children.length; j++) {
-            const className = hiddensource[i].children[j].className
+    for (let i = 0; i < sourcecode.length; i++) {
+        for (let j = 0; j < sourcecode[i].children.length; j++) {
+            const className = sourcecode[i].children[j].className
             if (className === "hidespan") {
-                hiddensource[i].children[j].style.display = 'none'
-                if (j + 1 < hiddensource[i].children.length)
-                    hiddensource[i].children[j + 1].remove()
+                sourcecode[i].children[j].style.display = 'none'
+                if (j + 1 < sourcecode[i].children.length)
+                    sourcecode[i].children[j + 1].remove()
             }
         }
     }

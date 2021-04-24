@@ -102,13 +102,10 @@
                 display: 'inline-block',
                 'border-radius': '3px'
             },
-            hiddensource: {
+            sourcecode: {
+                display: 'inline-block',
                 padding: '16px',
-                margin: '0 auto',
-                position: 'relative',
-                left: '0',
-                right: '0',
-                width: 'auto',
+                width: '100%',
                 'font-family': '"Consolas", "Lucida Console", Monaco, monospace',
                 'background-color': '#ffffff',
                 border: '1px solid black',
@@ -132,7 +129,7 @@
             const answerspanLength = answerspan.length
             const sourcespan = studentBody.getElementsByClassName('sourcespan')
             const sourcespanLength = sourcespan.length
-            const hiddensource = studentBody.getElementsByClassName('hiddensource')
+            const sourcecode = studentBody.getElementsByClassName('sourcecode')
 
             for (let i = 0; i < answerspanLength; i++) {
                 if (answerspan[0].innerHTML.includes("<br>")) {
@@ -149,13 +146,13 @@
                 }
             }
 
-            for (let i = 0; i < hiddensource.length; i++) {
-                for (let j = 0; j < hiddensource[i].children.length; j++) {
-                    const className = hiddensource[i].children[j].className
+            for (let i = 0; i < sourcecode.length; i++) {
+                for (let j = 0; j < sourcecode[i].children.length; j++) {
+                    const className = sourcecode[i].children[j].className
                     if (className === "hidespan") {
-                        hiddensource[i].children[j].style.display = 'none'
-                        if (j + 1 < hiddensource[i].children.length)
-                            hiddensource[i].children[j + 1].remove()
+                        sourcecode[i].children[j].style.display = 'none'
+                        if (j + 1 < sourcecode[i].children.length)
+                            sourcecode[i].children[j + 1].remove()
                     }
                 }
             }
@@ -226,7 +223,7 @@
         tinymce.PluginManager.add('sourcespan', function (editor, url) {
             const toggleSpan = () => {
 
-                if (editor.selection.getNode().className.toLowerCase() !== "hiddensource") return
+                if (editor.selection.getNode().className.toLowerCase() !== "sourcecode") return
 
                 // tinymce.activeEditor.formatter.toggle('sourcespan');
                 insertSelectionWithCss(editor, tinymceCSS.sourcespan, 'sourcespan', true)
@@ -243,7 +240,7 @@
         //hidespan
         tinymce.PluginManager.add('hidespan', function (editor, url) {
             const toggleSpan = () => {
-                if (editor.selection.getNode().className.toLowerCase() !== "hiddensource") return
+                if (editor.selection.getNode().className.toLowerCase() !== "sourcecode") return
                 editor.formatter.toggle('hidespan');
             }
 
@@ -255,14 +252,14 @@
             });
         });
 
-        //hiddensource
-        tinymce.PluginManager.add('hiddensource', function (editor, url) {
+        //sourcecode
+        tinymce.PluginManager.add('sourcecode', function (editor, url) {
             const toggleSpan = () => {
                 if (editor.selection.getNode().tagName.toLowerCase() === "span") return
-                editor.formatter.apply('hiddensource');
+                editor.formatter.apply('sourcecode');
             }
 
-            editor.ui.registry.addButton('hiddensource', {
+            editor.ui.registry.addButton('sourcecode', {
                 text: 'Source Code',
                 onAction: function () {
                     toggleSpan();
@@ -308,9 +305,9 @@
             selector: "#tinymce",
             height: "500px",
             plugins: [
-                "code, contextmenu, image, searchreplace, textcolor, table, answerspan, sourcespan, sample, badge, studentpreview, hiddensource, hidespan"
+                "code, contextmenu, image, searchreplace, textcolor, table, answerspan, sourcespan, sample, badge, studentpreview, sourcecode, hidespan"
             ],
-            toolbar: "forecolor | bold italic underline | example | code | removeformat | searchreplace | table | alignleft aligncenter alignright alignfull | badge sample | answerspan | hiddensource sourcespan hidespan | studentpreview",
+            toolbar: "forecolor | bold italic underline | example | code | removeformat | searchreplace | table | alignleft aligncenter alignright alignfull | badge sample | answerspan | sourcecode sourcespan hidespan | studentpreview",
             contextmenu: "bold italic",
             formats: {
                 badge: {
@@ -333,10 +330,10 @@
                     styles: tinymceCSS.sourcespan,
                     classes: 'sourcespan'
                 },
-                hiddensource: {
-                    block: 'div',
-                    styles: tinymceCSS.hiddensource,
-                    classes: 'hiddensource'
+                sourcecode: {
+                    block: 'span',
+                    styles: tinymceCSS.sourcecode,
+                    classes: 'sourcecode'
                 },
                 hidespan: {
                     inline: 'span',
