@@ -2,12 +2,16 @@
 
 import datetime
 import logging
+import requests
+import os
 
 import pkg_resources
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock
 from xblock.fields import Scope, List, String, Dict
 from xblockutils.resources import ResourceLoader
+
+
 
 # Make '_' a no-op so we can scrape strings
 _ = lambda text: text
@@ -38,6 +42,8 @@ class ELabXBlock(XBlock):
     answer_contents = Dict(default="", scope=Scope.content)
 
     student_inputs = Dict(default={}, scope=Scope.content)
+
+    TINYMCE_API_KEY = os.environ.get('TINYMCE_API_KEY')
 
     PROGRAMING_LANGUAGE = {
         'python': 'Python',
@@ -87,7 +93,7 @@ class ELabXBlock(XBlock):
         context_html = {'title': self.title, 'description': self.description, 'runtime_limit': self.runtime_limit,
                         'memory_limit': self.memory_limit, 'programing_language': self.programing_language,
                         'input_list': self.input_list, 'pl': self.PROGRAMING_LANGUAGE,
-                        'editor_content': self.editor_content}
+                        'editor_content': self.editor_content, 'tinymce_api_key': self.TINYMCE_API_KEY}
         template = loader.render_django_template(
             'static/html/studio.html',
             context=context_html
@@ -128,6 +134,9 @@ class ELabXBlock(XBlock):
                 'value': listInput[i]
             })
         self.input_list = inputs
+
+        #post the content to E-Labsheet
+        response = requests.post()
         
         return {"success": 1}
 

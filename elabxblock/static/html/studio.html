@@ -103,13 +103,16 @@
                 'border-radius': '3px'
             },
             sourcecode: {
-                display: 'inline-block',
+                margin: '0 auto',
+                position: 'relative',
+                left:'0',
+                right:'0',
                 padding: '16px',
-                width: '100%',
-                'font-family': '"Consolas", "Lucida Console", Monaco, monospace',
+                width: 'auto',
                 'background-color': '#ffffff',
                 border: '1px solid black',
-                'border-radius': '3px'
+                'border-radius': '3px',
+                'font-family': 'Consolas\, \"Lucida Console\"\, Monaco\, monospace',
             },
             hidespan: {
                 color: 'rgba(107,107,107,0.7)',
@@ -331,7 +334,7 @@
                     classes: 'sourcespan'
                 },
                 sourcecode: {
-                    block: 'span',
+                    block: 'div',
                     styles: tinymceCSS.sourcecode,
                     classes: 'sourcecode'
                 },
