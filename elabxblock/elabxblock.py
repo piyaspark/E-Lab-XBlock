@@ -136,7 +136,7 @@ class ELabXBlock(XBlock):
         self.input_list = inputs
 
         #post the content to E-Labsheet
-        response = requests.post()
+        # response = requests.post()
         
         return {"success": 1}
 
