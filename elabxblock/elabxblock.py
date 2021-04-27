@@ -27,6 +27,7 @@ class ELabXBlock(XBlock):
     # Fields are defined on the class.  You can access them in your code as
     # self.<fieldname>.
 
+    has_score = True
     title = String(help="Title of the problem", default="", scope=Scope.content)
     description = String(help="Description about the problem such as instruction", default="", scope=Scope.content)
     runtime_limit = String(help="Runtime limit for compiling", default="", scope=Scope.content)
@@ -39,7 +40,7 @@ class ELabXBlock(XBlock):
     student_contents = String(default="<div></div>", scope=Scope.content)
     answer_contents = Dict(default="", scope=Scope.content)
     student_inputs = Dict(default={}, scope=Scope.content)
-    grading_results = List(default=[], scope=Scope.content)
+    grading_results = List(default=[], scope=Scope.user_state)
 
     TINYMCE_API_KEY = os.environ.get('TINYMCE_API_KEY')
 
@@ -107,6 +108,14 @@ class ELabXBlock(XBlock):
     def submit_answer(self, data, suffix=''):
         self.student_inputs = data['student_inputs']
         self.grading_results = self.post_answer()
+
+        submission_score = self.map_score(self.grading_results)
+        max_score = len(self.grading_results)
+
+        self.runtime.publish(self, "grade",
+                    { value: float(submission_score),
+                      max_value: float(max_score) })
+
         return {"success": 1}
 
     @XBlock.json_handler
@@ -134,6 +143,14 @@ class ELabXBlock(XBlock):
         self.input_list = inputs
 
         return {"success": 1}
+
+    def map_score(self, grading_results):
+        score = 0
+        for i in range(len(grading_results)):
+            if grading_results[i] == "P":
+                score += 1
+
+        return score
 
     def post_answer(self):
         url = "https://kulomb.pknn.dev/elab/api/tasks/submit/"

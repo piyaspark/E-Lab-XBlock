@@ -6,6 +6,10 @@ a {
 button {
     cursor: pointer;
 }
+. problem_grade {
+    color: #666;
+    font-size: 0.875em;
+}
 
 .student_container {
     border: 1px solid black;

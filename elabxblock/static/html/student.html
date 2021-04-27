@@ -1,15 +1,17 @@
 <div xmlns="http://www.w3.org/1999/html">
     {% if title %}
     <h3 class="hd hd-3">{{title}}</h3>
-    {% if grading_results %}
-    <div class="problem-progress"><span id="result_show_score">0</span>/{{grading_results | length}} point</div>
-    {% else %}
-    <div class="problem-progress">(ungraded)</div>
-    {% endif %}
-    <p class="">{{description}}</p>
-    <div class="flex flex-row text-base">
-        <p><b>{{programing_language}}</b> languages, <b>{{runtime_limit}}</b> ms , <b>{{memory_limit}}</b> kb, Result: <b>[<span id="result_show_list"></span>]</b></p>
+    <p>{{description}}</p>
+    <div class="flex flex-row text-base  mb-1">
+        <b>{{programing_language}}</b> languages, <b>{{runtime_limit}}</b> ms , <b>{{memory_limit}}</b> kb, Result: <b>[<span
+            id="result_show_list"></span>]</b>
     </div>
+    {% if grading_results %}
+    <div class="problem_grade mb-1"><span id="result_show_score">0</span>/{{grading_results | length}} point</div>
+    {% else %}
+    <div class="problem_grade mb-1">(ungraded)</div>
+    {% endif %}
+
     <div class="flex flex-col" id="task_information">
         <div class="flex flex-col mt-10">
             <div class="flex flex-row">
@@ -23,8 +25,9 @@
                         <button id="copyCurrent">Copy to current</button>
                     </div>
                     <div class="pb-4 px-2">
-                        {{student_content | safe}}</div>
+                        {{student_content | safe}}
                     </div>
+                </div>
             </div>
         </div>
     </div>
@@ -33,23 +36,35 @@
     <script>
         $(window).on("load", function () {
             //set history
-            const studentInputs = {{ student_inputs | safe }}
+            const studentInputs = {
+            {
+                student_inputs | safe
+            }
+        }
             console.log(studentInputs)
             if (jQuery.isEmptyObject(studentInputs)) {
                 $('#recent').prop("disabled", true)
-            }else {
+            } else {
                 $('#recent').prop("disabled", false)
                 setRecentInputs(studentInputs)
             }
 
             // result list
-            const resultList = {{grading_results | safe}}
-            const inputList = {{input_list | safe}}
-            if (resultList.length === 0){
+            const resultList = {
+            {
+                grading_results | safe
+            }
+        }
+            const inputList = {
+            {
+                input_list | safe
+            }
+        }
+            if (resultList.length === 0) {
                 for (let i = 0; i < inputList.length; i++) {
                     $('#result_show_list').append("-")
                 }
-            }else {
+            } else {
                 let passCount = 0
                 for (let i = 0; i < resultList.length; i++) {
                     console.log(resultList[i].toLowerCase() === "p")
