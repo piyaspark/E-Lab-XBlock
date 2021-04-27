@@ -16,7 +16,7 @@ function Studio(runtime, element) {
         const lastIndex = document.getElementsByClassName("input_selector").length + 1
         $('#input_box', element).append("<div class=\"flex flex-row my-1 mx-2 align-left items-center \">" +
             `<p class=\"mx-1 my-1\">Input #${lastIndex}</p>` +
-            `<input class=\"h-auto text-center input_selector\"` +
+            `<textarea class=\"h-auto text-center input_selector\"` +
             ` placeholder=\"input ${lastIndex}\" value=\"\" />` +
             `<p class=\"ml-2 text-red-500 my-1 cursor-pointer\" onclick=\"removeInput(this)\">X</p>` +
             "</div>");
@@ -52,7 +52,7 @@ function Studio(runtime, element) {
         const studentBody = `<div contenteditable="false">${toStudentContent(body)}</div>`;
         console.log(studentBody)
 
-        runtime.notify('save', {state: 'start'})
+        // runtime.notify('save', {state: 'start'})
         $.ajax({
             type: "POST",
             url: handleSaveUrl,
@@ -69,7 +69,7 @@ function Studio(runtime, element) {
             }),
             success: saveStatus
         }).done(function (response) {
-            runtime.notify('save', {state: 'end'})
+            // runtime.notify('save', {state: 'end'})
         })
     });
 

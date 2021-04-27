@@ -11,8 +11,6 @@ from xblock.core import XBlock
 from xblock.fields import Scope, List, String, Dict
 from xblockutils.resources import ResourceLoader
 
-
-
 # Make '_' a no-op so we can scrape strings
 _ = lambda text: text
 loader = ResourceLoader(__name__)
@@ -40,12 +38,12 @@ class ELabXBlock(XBlock):
     input_list = List(default=[{'i': 0, 'value': ''}], scope=Scope.content)
     student_contents = String(default="<div></div>", scope=Scope.content)
     answer_contents = Dict(default="", scope=Scope.content)
-
     student_inputs = Dict(default={}, scope=Scope.content)
+    grading_results = List(default=[], scope=Scope.content)
 
     TINYMCE_API_KEY = os.environ.get('TINYMCE_API_KEY')
 
-    PROGRAMING_LANGUAGE = {
+    available_languages = {
         'python': 'Python',
         'python2': 'Python 2',
         'python3': 'Python 3',
@@ -64,21 +62,21 @@ class ELabXBlock(XBlock):
         The primary view of the ELabXBlock, shown to students
         when viewing courses.
         """
-
         context_html = {'title': self.title,
                         'description': self.description,
                         'runtime_limit': self.runtime_limit,
                         'memory_limit': self.memory_limit,
-                        'programing_language': self.PROGRAMING_LANGUAGE[self.programing_language],
-                        'test_case_len': len(self.input_list),
+                        'programing_language': self.available_languages[self.programing_language],
                         'student_content': self.student_contents,
-                        'student_inputs': self.student_inputs
+                        'student_inputs': self.student_inputs,
+                        'input_list': self.input_list,
+                        'grading_results': self.grading_results
                         }
         template = loader.render_django_template(
             'static/html/student.html',
             context=context_html
         )
-        # html = resource_string("static/html/studio.html")
+
         frag = Fragment(template)
         frag.add_css(resource_string("static/css/elabxblock.css"))
         frag.add_javascript(resource_string("static/js/src/student.js"))
@@ -92,14 +90,13 @@ class ELabXBlock(XBlock):
         """
         context_html = {'title': self.title, 'description': self.description, 'runtime_limit': self.runtime_limit,
                         'memory_limit': self.memory_limit, 'programing_language': self.programing_language,
-                        'input_list': self.input_list, 'pl': self.PROGRAMING_LANGUAGE,
+                        'input_list': self.input_list, 'pl': self.available_languages,
                         'editor_content': self.editor_content, 'tinymce_api_key': self.TINYMCE_API_KEY}
         template = loader.render_django_template(
             'static/html/studio.html',
             context=context_html
         )
 
-        # html = resource_string("static/html/studio.html")
         frag = Fragment(template)
         frag.add_css(resource_string("static/css/elabxblock.css"))
         frag.add_javascript(resource_string("static/js/src/studio.js"))
@@ -109,6 +106,7 @@ class ELabXBlock(XBlock):
     @XBlock.json_handler
     def submit_answer(self, data, suffix=''):
         self.student_inputs = data['student_inputs']
+        self.grading_results = self.post_answer()
         return {"success": 1}
 
     @XBlock.json_handler
@@ -135,10 +133,41 @@ class ELabXBlock(XBlock):
             })
         self.input_list = inputs
 
-        #post the content to E-Labsheet
-        # response = requests.post()
-        
         return {"success": 1}
+
+    def post_answer(self):
+        url = "https://kulomb.pknn.dev/elab/api/tasks/submit/"
+
+        student_answers = self.student_inputs['sourceSpan']
+        answer_group = dict()
+
+        for i in range(len(student_answers)):
+            parameter_name = "b" + str(1 + i)
+            answer_group[parameter_name] = student_answers[i]
+
+        payload = {"answer": answer_group}
+        print(payload)
+
+        response = requests.post(url + str(6), json=payload)
+        print("--- post_answer: response ---")
+        print(response.json())
+
+        res_body = response.json()
+        submit_id = str(res_body["id"])
+        results = self.get_submit_status(submit_id)
+        print(results)
+
+        return results
+
+    def get_submit_status(self, submit_id):
+        url = "https://kulomb.pknn.dev/api/tasks/submit/status/"
+        response = requests.get(url + submit_id)
+        print("--- get_submit_status: response ---")
+        print(response.json())
+        res_body = response.json()
+        results = res_body["results"]
+
+        return results
 
     @XBlock.json_handler
     def increase_input(self, data, suffix=''):

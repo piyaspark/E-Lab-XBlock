@@ -93,8 +93,8 @@
                 display: 'inline-block',
                 'border-radius': '3px',
                 border: '1px solid black',
-                paddingRight: '2px',
-                paddingLeft: '2px',
+                'padding-right': '2px',
+                'padding-left': '2px',
             },
             sourcespan: {
                 'background-color': '#ffedba',
@@ -112,7 +112,7 @@
                 'background-color': '#ffffff',
                 border: '1px solid black',
                 'border-radius': '3px',
-                'font-family': 'Consolas\, \"Lucida Console\"\, Monaco\, monospace',
+                'font-family': 'Consolas\, \'Lucida Console\'\, Monaco\, monospace',
             },
             hidespan: {
                 color: 'rgba(107,107,107,0.7)',
@@ -123,6 +123,15 @@
 
         const replaceCSSToString = (css) => {
             return JSON.stringify(css).replaceAll("}", "").replaceAll("{", "").replaceAll("\"", "").replaceAll(",", ";")
+        }
+
+        const CSSJsonToCSSString = (css) => {
+            console.log("here")
+            let str = ""
+            for (const cssKey in css) {
+                str = str.concat('.', cssKey,' {',replaceCSSToString(css[cssKey]), '}')
+            }
+            return str
         }
 
         const toStudentContent2 = (body) => {
@@ -163,16 +172,14 @@
             return studentBody.outerHTML
         }
 
-        const insertSelectionWithCss = (editor, css, cl, checkBr = false) => {
+        const insertSelection = (editor, cl, checkBr = false) => {
             const selection = editor.selection.getContent()
             const node = editor.selection.getNode()
-            console.log(node.childNodes[node.childNodes.length - 1].nodeName !== "BR")
-            const styles = replaceCSSToString(css)
             if (selection.includes("span")) return;
             if (checkBr && node.childNodes[node.childNodes.length - 1].nodeName !== "BR") {
-                editor.selection.setContent("<span class='" + cl + "' style='" + styles + "' >" + selection + "</span><br>")
+                editor.selection.setContent("<span class=" + cl + " >" + selection + "</span><br>")
             } else {
-                editor.selection.setContent("<span class='" + cl + "' style='" + styles + "' >" + selection + "</span>")
+                editor.selection.setContent("<span class=" + cl + " >" + selection + "</span>")
             }
         }
 
@@ -210,7 +217,7 @@
         tinymce.PluginManager.add('answerspan', function (editor, url) {
             const toggleSpan = () => {
                 if (editor.selection.getNode().tagName.toLowerCase() === "span") return
-                insertSelectionWithCss(editor, tinymceCSS.answerspan, 'answerspan')
+                insertSelection(editor, 'answerspan')
                 // tinymce.activeEditor.formatter.toggle('answerspan');
             }
 
@@ -229,11 +236,11 @@
                 if (editor.selection.getNode().className.toLowerCase() !== "sourcecode") return
 
                 // tinymce.activeEditor.formatter.toggle('sourcespan');
-                insertSelectionWithCss(editor, tinymceCSS.sourcespan, 'sourcespan', true)
+                insertSelection(editor,'sourcespan', true)
             }
 
             editor.ui.registry.addButton('sourcespan', {
-                text: 'Student Source',
+                text: 'Answer Box',
                 onAction: function () {
                     toggleSpan();
                 }
@@ -281,7 +288,7 @@
                         items: [{
                             type: 'iframe',
                             name: 'iframe',
-                            sandboxed: false
+                            sandboxed: true
                         }]
                     },
                     buttons: [{
@@ -290,7 +297,10 @@
                         primary: true
                     }],
                 }).setData({
-                    iframe: toStudentContent2(editor.getBody())
+                    iframe: '<html> ' +
+                        '<style type=\'text/css\'> '+ CSSJsonToCSSString(tinymceCSS) +' </style>'+
+                        toStudentContent2(editor.getBody()) +
+                        '<html>'
                 })
             }
 
@@ -307,51 +317,47 @@
             force_p_newlines: false,
             selector: "#tinymce",
             height: "500px",
+            paste_as_text: true,
+            content_style: CSSJsonToCSSString(tinymceCSS),
             plugins: [
-                "code, contextmenu, image, searchreplace, textcolor, table, answerspan, sourcespan, sample, badge, studentpreview, sourcecode, hidespan"
+                "paste, code, contextmenu, image, searchreplace, textcolor, table, answerspan, sourcespan, sample, badge, studentpreview, sourcecode, hidespan"
             ],
-            toolbar: "forecolor | bold italic underline | example | code | removeformat | searchreplace | table | alignleft aligncenter alignright alignfull | badge sample | answerspan | sourcecode sourcespan hidespan | studentpreview",
+            toolbar: "forecolor paste | bold italic underline | example | code | removeformat | searchreplace | table | alignleft aligncenter alignright alignfull | badge sample  | sourcecode sourcespan hidespan | studentpreview",
             contextmenu: "bold italic",
             formats: {
                 badge: {
                     inline: 'span',
-                    styles: tinymceCSS.badge,
                     classes: 'badge'
                 },
                 sample: {
                     inline: 'span',
-                    styles: tinymceCSS.sample,
                     classes: 'sample'
                 },
                 answerspan: {
                     inline: 'span',
-                    styles: tinymceCSS.answerspan,
                     classes: 'answerspan'
                 },
                 sourcespan: {
                     inline: 'span',
-                    styles: tinymceCSS.sourcespan,
                     classes: 'sourcespan'
                 },
                 sourcecode: {
                     block: 'div',
-                    styles: tinymceCSS.sourcecode,
                     classes: 'sourcecode'
                 },
                 hidespan: {
                     inline: 'span',
-                    styles: tinymceCSS.hidespan,
                     classes: 'hidespan'
                 }
             },
             setup: (ed) => {
-                ed.on("paste", function (e) {
-                    if (ed.selection.getNode().tagName.toLowerCase() === "span") {
-                        const text = (e.originalEvent || e).clipboardData.getData('text/plain');
-                        ed.selection.setContent(text.replace(/\n/g, "<br>"))
-                        e.preventDefault()
-                    }
-                })
+                // ed.on("paste", function (e) {
+                //     if (ed.selection.getNode().tagName.toLowerCase() === "span") {
+                //         const text = (e.originalEvent || e).clipboardData.getData('text/plain');
+                //         ed.selection.setContent(text.replace(/\n/g, "<br>"))
+                //         e.preventDefault()
+                //     }
+                // })
 
                 ed.on('keydown', function (e) {
                     //enter case for span
