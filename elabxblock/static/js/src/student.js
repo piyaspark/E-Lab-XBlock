@@ -35,6 +35,7 @@ function Student(runtime, element) {
                             $('#result_show_list').append(resultLists[i])
                         }
                         $('#result_show_score').text(passCount)
+                        sendScore(resultLists)
                         clearInterval(fetchSubmitStatusInterval);
                     }
                 },
@@ -45,6 +46,18 @@ function Student(runtime, element) {
 
         }, 3000)
     }
+
+    const sendScore = (resultLists) => {
+        $.ajax({
+            type: "POST",
+            url: handleGetScore,
+            data: JSON.stringify({
+            gradingResult: resultLists
+        }),
+        })
+    }
+
+    const handleGetScore = runtime.handlerUrl(element, 'get_score');
     const handleSubmitUrl = runtime.handlerUrl(element, 'submit_answer');
 
 

@@ -116,7 +116,12 @@ class ELabXBlock(XBlock):
         print("here2")
         post_answer = self.post_answer()
         print("here1")
-        self.grading_results = post_answer['result']
+
+        return {"success": 1, "submit_id": post_answer['submit_id']}
+
+    @XBlock.json_handler
+    def get_score(self, data, suffix=''):
+        self.grading_results = data['gradingResult']
 
         submission_score = self.map_score(self.grading_results)
         max_score = len(self.grading_results)
@@ -125,7 +130,7 @@ class ELabXBlock(XBlock):
                     { value: float(submission_score),
                       max_value: float(max_score) })
 
-        return {"success": 1, "submit_id": post_answer['submit_id']}
+        return {"success": 1}
 
     @XBlock.json_handler
     def save_data(self, data, suffix=''):
