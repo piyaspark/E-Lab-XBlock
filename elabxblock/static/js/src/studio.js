@@ -57,7 +57,7 @@ function Studio(runtime, element) {
         const studentBody = `<div contenteditable="false">${toStudentContent(body)}</div>`;
         console.log(studentBody)
 
-        // runtime.notify('save', {state: 'start'})
+        runtime.notify('save', {state: 'start'})
         $.ajax({
             type: "POST",
             url: handleSaveUrl,
@@ -75,7 +75,7 @@ function Studio(runtime, element) {
             }),
             success: saveStatus
         }).done(function (response) {
-            // runtime.notify('save', {state: 'end'})
+            runtime.notify('save', {state: 'end'})
         })
     });
 

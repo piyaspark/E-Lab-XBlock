@@ -42,7 +42,7 @@ class ELabXBlock(XBlock):
     student_inputs = Dict(default={}, scope=Scope.content)
 
     # Use Scope.user_state when on production
-    grading_results = List(default=[], scope=Scope.content)
+    grading_results = List(default=[], scope=Scope.user_state)
     answer_keys = List(default=[], scope=Scope.content)
     task_id = String(default="", scope=Scope.content)
     sources = String(default="<div></div>", scope=Scope.content)
@@ -116,14 +116,14 @@ class ELabXBlock(XBlock):
         print("here2")
         post_answer = self.post_answer()
         print("here1")
-        # self.grading_results = post_answer['results']
+        self.grading_results = post_answer['result']
 
-        # submission_score = self.map_score(self.grading_results)
-        # max_score = len(self.grading_results)
+        submission_score = self.map_score(self.grading_results)
+        max_score = len(self.grading_results)
 
-        # self.runtime.publish(self, "grade",
-        #             { value: float(submission_score),
-        #               max_value: float(max_score) })
+        self.runtime.publish(self, "grade",
+                    { value: float(submission_score),
+                      max_value: float(max_score) })
 
         return {"success": 1, "submit_id": post_answer['submit_id']}
 
