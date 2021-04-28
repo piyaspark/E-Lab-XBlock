@@ -41,6 +41,11 @@ function Studio(runtime, element) {
         const frameObj = document.getElementsByTagName("IFRAME")[0];
         const body = frameObj.contentWindow.document.body;
         const editorContent = body.innerHTML;
+        const sourceCode = body.getElementsByClassName("sourcecode")
+        let mergeSource = ""
+        for (let i = 0; i < sourceCode.length; i++) {
+            mergeSource = mergeSource.concat(sourceCode[i].outerHTML)
+        }
         
         //get answer content then post request to API
         // const answerContent = getAnswerContent(tinymce.activeEditor.getBody());
@@ -65,7 +70,8 @@ function Studio(runtime, element) {
                 listInput: listInput.length === 0 ? [""] : inputs,
                 editor_content: editorContent,
                 student_content: studentBody,
-                answer_content: answerContent
+                answer_content: answerContent,
+                sources: "<div>" + mergeSource.replaceAll("<br>", "<br />") + "</div>"
             }),
             success: saveStatus
         }).done(function (response) {

@@ -2,7 +2,7 @@
     {% if title %}
     <h3 class="hd hd-3">{{title}}</h3>
     <p>{{description}}</p>
-    <div class="flex flex-row text-base  mb-1">
+    <div class="flex flex-row text-base  mb-2">
         <b>{{programing_language}}</b> languages, <b>{{runtime_limit}}</b> ms , <b>{{memory_limit}}</b> kb, Result: <b>[<span
             id="result_show_list"></span>]</b>
     </div>
@@ -36,11 +36,7 @@
     <script>
         $(window).on("load", function () {
             //set history
-            const studentInputs = {
-            {
-                student_inputs | safe
-            }
-        }
+            const studentInputs = {{student_inputs | safe}}
             console.log(studentInputs)
             if (jQuery.isEmptyObject(studentInputs)) {
                 $('#recent').prop("disabled", true)
@@ -50,16 +46,8 @@
             }
 
             // result list
-            const resultList = {
-            {
-                grading_results | safe
-            }
-        }
-            const inputList = {
-            {
-                input_list | safe
-            }
-        }
+            const resultList = {{grading_results | safe}}
+            const inputList = {{input_list | safe}}
             if (resultList.length === 0) {
                 for (let i = 0; i < inputList.length; i++) {
                     $('#result_show_list').append("-")
@@ -67,8 +55,6 @@
             } else {
                 let passCount = 0
                 for (let i = 0; i < resultList.length; i++) {
-                    console.log(resultList[i].toLowerCase() === "p")
-                    console.log(resultList[i].toLowerCase())
                     if (resultList[i].toLowerCase() === "p") passCount += 1
                     $('#result_show_list').append(resultList[i])
                 }

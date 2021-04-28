@@ -4,6 +4,46 @@ function Student(runtime, element) {
         /* Here's where you'd do things on page load. */
     });
 
+    const submitHandle = (result) => {
+        console.log(result)
+        if (result.success === 1) {
+            fetchSubmitStatus(result.submit_id)
+        } else {
+            alert("Submit failure")
+        }
+    }
+
+    const fetchSubmitStatus = (submitId) => {
+        const fetchSubmitStatusInterval = setInterval(() => {
+            $.ajax({
+                type: "GET",
+                url: "https://kulomb.pknn.dev/api/tasks/submit/status/" + submitId,
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE"
+                },
+                success: (response) => {
+                    console.log(response)
+                    if (response.results.length !== 0) {
+                        $('#result_show_list').text("")
+                        const resultLists = response.results
+                        let passCount = 0
+                        for (let i = 0; i < resultLists.length; i++) {
+                            if (resultLists[i].toLowerCase() === "p") passCount += 1
+                            $('#result_show_list').append(resultLists[i])
+                        }
+                        $('#result_show_score').text(passCount)
+                        clearInterval(fetchSubmitStatusInterval);
+                    }
+                },
+                error: () => {
+                    clearInterval(fetchSubmitStatusInterval);
+                }
+            });
+
+        }, 3000)
+    }
     const handleSubmitUrl = runtime.handlerUrl(element, 'submit_answer');
 
 
@@ -16,7 +56,8 @@ function Student(runtime, element) {
             url: handleSubmitUrl,
             data: JSON.stringify({
                 student_inputs: studentInputs
-            })
+            }),
+            success: submitHandle
         });
     });
 

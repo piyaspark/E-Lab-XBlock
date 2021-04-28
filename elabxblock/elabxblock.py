@@ -40,7 +40,12 @@ class ELabXBlock(XBlock):
     student_contents = String(default="<div></div>", scope=Scope.content)
     answer_contents = Dict(default="", scope=Scope.content)
     student_inputs = Dict(default={}, scope=Scope.content)
-    grading_results = List(default=[], scope=Scope.user_state)
+
+    # Use Scope.user_state when on production
+    grading_results = List(default=[], scope=Scope.content)
+    answer_keys = List(default=[], scope=Scope.content)
+    task_id = String(default="", scope=Scope.content)
+    sources = String(default="<div></div>", scope=Scope.content)
 
     TINYMCE_API_KEY = os.environ.get('TINYMCE_API_KEY')
 
@@ -107,16 +112,20 @@ class ELabXBlock(XBlock):
     @XBlock.json_handler
     def submit_answer(self, data, suffix=''):
         self.student_inputs = data['student_inputs']
-        self.grading_results = self.post_answer()
+        print(self.student_inputs)
+        print("here2")
+        post_answer = self.post_answer()
+        print("here1")
+        # self.grading_results = post_answer['results']
 
-        submission_score = self.map_score(self.grading_results)
-        max_score = len(self.grading_results)
+        # submission_score = self.map_score(self.grading_results)
+        # max_score = len(self.grading_results)
 
-        self.runtime.publish(self, "grade",
-                    { value: float(submission_score),
-                      max_value: float(max_score) })
+        # self.runtime.publish(self, "grade",
+        #             { value: float(submission_score),
+        #               max_value: float(max_score) })
 
-        return {"success": 1}
+        return {"success": 1, "submit_id": post_answer['submit_id']}
 
     @XBlock.json_handler
     def save_data(self, data, suffix=''):
@@ -132,6 +141,8 @@ class ELabXBlock(XBlock):
         self.editor_content = data['editor_content']
         self.student_contents = data['student_content']
         self.answer_contents = data['answer_content']
+        self.sources = data['sources']
+        print(self.sources)
 
         listInput = data['listInput']
         inputs = []
@@ -141,6 +152,9 @@ class ELabXBlock(XBlock):
                 'value': listInput[i]
             })
         self.input_list = inputs
+        self.student_inputs = {}
+
+        self.create_task()
 
         return {"success": 1}
 
@@ -159,32 +173,60 @@ class ELabXBlock(XBlock):
         answer_group = dict()
 
         for i in range(len(student_answers)):
-            parameter_name = "b" + str(1 + i)
+            parameter_name = self.answer_keys[i]
             answer_group[parameter_name] = student_answers[i]
 
         payload = {"answer": answer_group}
         print(payload)
 
-        response = requests.post(url + str(6), json=payload)
+        response = requests.post(url + self.task_id, json=payload)
         print("--- post_answer: response ---")
         print(response.json())
 
         res_body = response.json()
         submit_id = str(res_body["id"])
-        results = self.get_submit_status(submit_id)
-        print(results)
+        print("here3")
+        # results = self.get_submit_status(submit_id)
+        # print(results)
+        print("here4")
+        return {'submit_id': submit_id}
 
-        return results
+    # def get_submit_status(self, submit_id):
+    #     url = "https://kulomb.pknn.dev/api/tasks/submit/status/"
+    #     response = requests.get(url + submit_id)
+    #     print("--- get_submit_status: response ---")
+    #     print(response.json())
+    #     res_body = response.json()
+    #     results = res_body["results"]
+    #
+    #     return results
 
-    def get_submit_status(self, submit_id):
-        url = "https://kulomb.pknn.dev/api/tasks/submit/status/"
-        response = requests.get(url + submit_id)
-        print("--- get_submit_status: response ---")
-        print(response.json())
+    def create_task(self):
+        url = "https://kulomb.pknn.dev/api/tasks"
+
+        test_cases = []
+        for i in range(len(self.input_list)):
+            test_cases.append(self.input_list[i]["value"])
+
+        request_body = {
+            "name": self.title,
+            "description": self.description,
+            "runtime": str(self.runtime),
+            "memory": str(self.memory_limit),
+            "language": self.programing_language,
+            "test_cases": test_cases,
+            "source": self.sources
+        }
+
+        response = requests.post(url, json=request_body)
+        print(response.status_code)
         res_body = response.json()
-        results = res_body["results"]
+        print(response.json())
+        self.answer_keys = res_body["answer_keys"]
+        self.task_id = str(res_body["id"])
+        print(self.answer_keys)
+        print(self.task_id)
 
-        return results
 
     @XBlock.json_handler
     def increase_input(self, data, suffix=''):
