@@ -127,8 +127,8 @@ class ELabXBlock(XBlock):
         max_score = len(self.grading_results)
 
         self.runtime.publish(self, "grade",
-                    { value: float(submission_score),
-                      max_value: float(max_score) })
+                    { value: submission_score,
+                      max_value: max_score })
 
         return {"success": 1}
 

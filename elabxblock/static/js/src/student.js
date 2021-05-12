@@ -44,7 +44,7 @@ function Student(runtime, element) {
                 }
             });
 
-        }, 3000)
+        }, 2000)
     }
 
     const sendScore = (resultLists) => {
