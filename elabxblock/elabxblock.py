@@ -112,10 +112,10 @@ class ELabXBlock(XBlock):
     @XBlock.json_handler
     def submit_answer(self, data, suffix=''):
         self.student_inputs = data['student_inputs']
-        print(self.student_inputs)
-        print("here2")
+        # print(self.student_inputs)
+        # print("here2")
         post_answer = self.post_answer()
-        print("here1")
+        # print("here1")
 
         return {"success": 1, "submit_id": post_answer['submit_id']}
 
@@ -182,18 +182,18 @@ class ELabXBlock(XBlock):
             answer_group[parameter_name] = student_answers[i]
 
         payload = {"answer": answer_group}
-        print(payload)
+        # print(payload)
 
         response = requests.post(url + self.task_id, json=payload)
-        print("--- post_answer: response ---")
-        print(response.json())
+        # print("--- post_answer: response ---")
+        # print(response.json())
 
         res_body = response.json()
         submit_id = str(res_body["id"])
-        print("here3")
+        # print("here3")
         # results = self.get_submit_status(submit_id)
         # print(results)
-        print("here4")
+        # print("here4")
         return {'submit_id': submit_id}
 
     # def get_submit_status(self, submit_id):
