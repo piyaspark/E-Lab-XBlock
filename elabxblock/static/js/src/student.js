@@ -72,8 +72,8 @@ function Student(runtime, element) {
                 student_inputs: studentInputs
             }),
             success: submitHandle,
-            error: () => {
-                console.log("handleSubmitUrl: error")
+            error: (e) => {
+                console.log("handleSubmitUrl: " + e)
             }
         });
     });
