@@ -9,7 +9,7 @@ function Student(runtime, element) {
         if (result.success === 1) {
             fetchSubmitStatus(result.submit_id)
         } else {
-            alert("Submit failure")
+            alert("Submit failure: " + result.message)
         }
     }
 
