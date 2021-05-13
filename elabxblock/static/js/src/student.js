@@ -72,9 +72,9 @@ function Student(runtime, element) {
                 student_inputs: studentInputs
             }),
             success: submitHandle,
-            error: (e) => {
-                console.log("handleSubmitUrl: " + e)
-            }
+            error: function(xhr, status, error) {
+                alert(xhr.responseText);
+              }
         });
     });
 
