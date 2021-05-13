@@ -71,7 +71,10 @@ function Student(runtime, element) {
             data: JSON.stringify({
                 student_inputs: studentInputs
             }),
-            success: submitHandle
+            success: submitHandle,
+            error: () => {
+                console.log("handleSubmitUrl: error")
+            }
         });
     });
 
