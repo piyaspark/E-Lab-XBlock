@@ -73,7 +73,8 @@ function Student(runtime, element) {
             }),
             success: submitHandle,
             error: function(xhr, status, error) {
-                alert(xhr.responseText);
+                console.log(status)
+                console.log(error)
               }
         });
     });
