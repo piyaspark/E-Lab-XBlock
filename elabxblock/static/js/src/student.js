@@ -55,6 +55,9 @@ function Student(runtime, element) {
             data: JSON.stringify({
             gradingResult: resultLists
         }),
+        success: () => {
+            console.log("sendScore: success");
+        } 
         })
     }
 
@@ -65,6 +68,7 @@ function Student(runtime, element) {
     $(element).find('#submit_button').click(function (eventObject) {
         const studentInputs = getStudentInputs()
         console.log("🚀 ~ file: student.js ~ line 12 ~ studentInputs", studentInputs)
+        $('#result_show_list').text("darm")
 
         $.ajax({
             type: "POST",
