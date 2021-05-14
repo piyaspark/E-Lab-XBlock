@@ -8,6 +8,7 @@ function Student(runtime, element) {
         console.log(result)
         if (result.success === 1) {
             fetchSubmitStatus(result.submit_id)
+            
         } else {
             alert("Submit failure: " + result.message)
         }
@@ -75,11 +76,15 @@ function Student(runtime, element) {
             error: function(xhr, status, error) {
                 console.log(status)
                 console.log(error)
-                console.log("Data: " + JSON.stringify({
+                console.log("error ==> Data: " + JSON.stringify({
                     student_inputs: studentInputs
                 }))
               }
         });
+
+        console.log("Data: " + JSON.stringify({
+            student_inputs: studentInputs
+        }))
     });
 
     $("#current").click(function (eventObject) {

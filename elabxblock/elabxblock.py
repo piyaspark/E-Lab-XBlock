@@ -111,7 +111,7 @@ class ELabXBlock(XBlock):
 
     @XBlock.json_handler
     def submit_answer(self, data, suffix=''):
-        # self.student_inputs = data['student_inputs']
+        self.student_inputs = data.get('student_inputs')
         # print("step1")
         # post_answer = self.post_answer()
         # print(post_answer['submit_id'])
