@@ -111,14 +111,12 @@ class ELabXBlock(XBlock):
 
     @XBlock.json_handler
     def submit_answer(self, data, suffix=''):
-        try:
-            self.student_inputs = data['student_inputs']
-            print("step1")
-            # post_answer = self.post_answer()
-            # print(post_answer['submit_id'])
-            return {"success": 1, "submit_id": "227"}
-        except Exception as e:
-            return {"success": 0, "message": str(e)}
+        # self.student_inputs = data['student_inputs']
+        # print("step1")
+        # post_answer = self.post_answer()
+        # print(post_answer['submit_id'])
+        return {"success": 1, "submit_id": "227"}
+        
 
     @XBlock.json_handler
     def get_score(self, data, suffix=''):
