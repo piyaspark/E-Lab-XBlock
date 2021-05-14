@@ -39,13 +39,13 @@ class ELabXBlock(XBlock):
     input_list = List(default=[{'i': 0, 'value': ''}], scope=Scope.content)
     student_contents = String(default="<div></div>", scope=Scope.content)
     answer_contents = Dict(default="", scope=Scope.content)
-    student_inputs = Dict(default={}, scope=Scope.content)
-
-    # Use Scope.user_state when on production
-    grading_results = List(default=[], scope=Scope.user_state)
     answer_keys = List(default=[], scope=Scope.content)
     task_id = String(default="", scope=Scope.content)
     sources = String(default="<div></div>", scope=Scope.content)
+
+    # Use Scope.user_state when on production
+    grading_results = List(default=[], scope=Scope.user_state)
+    student_inputs = Dict(default={}, scope=Scope.user_state)
 
     TINYMCE_API_KEY = os.environ.get('TINYMCE_API_KEY')
 
@@ -111,7 +111,7 @@ class ELabXBlock(XBlock):
 
     @XBlock.json_handler
     def submit_answer(self, data, suffix=''):
-        self.student_inputs = data.get('student_inputs')
+        self.student_inputs = data['student_inputs']
         # print("step1")
         # post_answer = self.post_answer()
         # print(post_answer['submit_id'])
@@ -185,7 +185,7 @@ class ELabXBlock(XBlock):
 
         response = requests.post(url + self.task_id, json=payload)
         # print("--- post_answer: response ---")
-        # print(response.json())
+        # print(response.json()) 
 
         res_body = response.json()
         submit_id = str(res_body["id"])
