@@ -27,13 +27,11 @@ function Student(runtime, element) {
                 success: (response) => {
                     console.log("start here")
                     console.log(response)
-                    const res = JSON.parse(response)
-                    console.log(response.length);
-                    console.log(res.result.length)
-                    if (res.result.length !== 0) {
+                    console.log(response.result.length)
+                    if (response.result.length !== 0) {
                         console.log("meet condition")
                         $('#result_show_list').text("")
-                        const resultLists = res.result
+                        const resultLists = response.result
                         let passCount = 0
                         for (let i = 0; i < resultLists.length; i++) {
                             if (resultLists[i].toLowerCase() === "p") passCount += 1
