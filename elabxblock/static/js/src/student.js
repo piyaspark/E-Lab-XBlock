@@ -1,8 +1,8 @@
 function Student(runtime, element) {
 
-    $(function ($) {
-        /* Here's where you'd do things on page load. */
-    });
+    // $(function ($) {
+    //     /* Here's where you'd do things on page load. */
+    // });
 
     const submitHandle = (result) => {
         console.log(result)
