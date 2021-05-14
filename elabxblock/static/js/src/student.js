@@ -75,6 +75,9 @@ function Student(runtime, element) {
             error: function(xhr, status, error) {
                 console.log(status)
                 console.log(error)
+                console.log("Data: " + JSON.stringify({
+                    student_inputs: studentInputs
+                }))
               }
         });
     });
