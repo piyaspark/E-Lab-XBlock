@@ -112,10 +112,10 @@ class ELabXBlock(XBlock):
     @XBlock.json_handler
     def submit_answer(self, data, suffix=''):
         self.student_inputs = data['student_inputs']
-        # print("step1")
-        # post_answer = self.post_answer()
-        # print(post_answer['submit_id'])
-        return {"success": 1, "submit_id": "227"}
+        print("step1")
+        post_answer = self.post_answer()
+        print(post_answer['submit_id'])
+        return {"success": 1, "submit_id": post_answer['submit_id']}
         
 
     @XBlock.json_handler
@@ -126,8 +126,8 @@ class ELabXBlock(XBlock):
         max_score = len(self.grading_results)
 
         self.runtime.publish(self, "grade",
-                    { value: submission_score,
-                      max_value: max_score })
+                    { 'value': submission_score,
+                      'max_value': max_score })
 
         return {"success": 1}
 
