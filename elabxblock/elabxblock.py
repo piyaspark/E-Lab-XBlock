@@ -156,7 +156,7 @@ class ELabXBlock(XBlock):
                 'value': listInput[i]
             })
         self.input_list = inputs
-        self.student_inputs = {}
+        # self.student_inputs = {}
 
         self.create_task()
 
