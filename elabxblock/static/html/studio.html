@@ -10,16 +10,6 @@
     <h3 class="my-2">Task Specification</h3>
     <div class="flex-col">
         <div class="flex flex-row mx-2 my-1 align-left items-center">
-            <p class="m-1">Runtime Limit</p>
-            <input class="h-auto text-center" id="runtime_limit" placeholder="1000" value="{{runtime_limit}}"/>
-            <p class="m-1">ms</p>
-        </div>
-        <div class="flex flex-row mx-2 my-1 align-left items-center">
-            <p class="m-1">Memory Limit</p>
-            <input class="text-center h-auto" id="memory_limit" placeholder="500" value="{{memory_limit}}"/>
-            <p class="m-1">kb</p>
-        </div>
-        <div class="flex flex-row mx-2 my-1 align-left items-center">
             <p class="m-1">Programing Language</p>
             <select id="programing_language" name="programing_language">
                 {% for key, value in pl.items %}

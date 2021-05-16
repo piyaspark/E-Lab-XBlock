@@ -3,13 +3,12 @@
     <h3 class="hd hd-3">{{title}}</h3>
     <p>{{description}}</p>
     <div class="flex flex-row text-base  mb-2">
-        <p><b>{{programing_language}}</b> languages, <b>{{runtime_limit}}</b> ms , <b>{{memory_limit}}</b> kb, Result: <b>[<span
-            id="result_show_list"></span>]</b></p>
+        <p>Result: <b>[<span id="result_show_list"></span>]</b></p>
     </div>
     {% if grading_results %}
     <div class="problem_grade mb-1"><span id="result_show_score">0</span>/{{grading_results | length}} point</div>
     {% else %}
-    <div class="problem_grade mb-1">(ungraded)</div>
+    <div class="problem_grade mb-1"><span id="result_show_score">(ungraded)</span>/{{grading_results | length}} point</div>
     {% endif %}
 
     <div class="flex flex-col" id="task_information">

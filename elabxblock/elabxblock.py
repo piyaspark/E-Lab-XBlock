@@ -30,8 +30,6 @@ class ELabXBlock(XBlock):
     has_score = True
     title = String(help="Title of the problem", default="", scope=Scope.content)
     description = String(help="Description about the problem such as instruction", default="", scope=Scope.content)
-    runtime_limit = String(help="Runtime limit for compiling", default="", scope=Scope.content)
-    memory_limit = String(help="Memory limit for compiling", default="", scope=Scope.content)
     programing_language = String(help="Programming langauge that need to use in this problem", default="python",
                                  scope=Scope.content)
 
@@ -70,8 +68,6 @@ class ELabXBlock(XBlock):
         """
         context_html = {'title': self.title,
                         'description': self.description,
-                        'runtime_limit': self.runtime_limit,
-                        'memory_limit': self.memory_limit,
                         'programing_language': self.available_languages[self.programing_language],
                         'student_content': self.student_contents,
                         'student_inputs': self.student_inputs,
@@ -94,8 +90,8 @@ class ELabXBlock(XBlock):
         The primary view of the ELabXBlock, shown to students
         when viewing courses.
         """
-        context_html = {'title': self.title, 'description': self.description, 'runtime_limit': self.runtime_limit,
-                        'memory_limit': self.memory_limit, 'programing_language': self.programing_language,
+        context_html = {'title': self.title, 'description': self.description,
+                         'programing_language': self.programing_language,
                         'input_list': self.input_list, 'pl': self.available_languages,
                         'editor_content': self.editor_content, 'tinymce_api_key': self.TINYMCE_API_KEY}
         template = loader.render_django_template(
@@ -133,14 +129,18 @@ class ELabXBlock(XBlock):
 
     @XBlock.json_handler
     def save_data(self, data, suffix=''):
-        for key in data:
-            if not data[key] and key != 'listInput':
-                return {"success": 0, "data": key}
+
+        if not data['title']:
+            return {"success": 0, "data": 'title'}
+        if not data['description']:
+            return {"success": 0, "data": 'description'}
+        if not data['programing_language']:
+            return {"success": 0, "data": 'programing_language'}
 
         self.title = data['title']
         self.description = data['description']
-        self.runtime_limit = data['runtime_limit']
-        self.memory_limit = data['memory_limit']
+        # self.runtime_limit = data['runtime_limit']
+        # self.memory_limit = data['memory_limit']
         self.programing_language = data['programing_language']
         self.editor_content = data['editor_content']
         self.student_contents = data['student_content']
@@ -215,8 +215,6 @@ class ELabXBlock(XBlock):
         request_body = {
             "name": self.title,
             "description": self.description,
-            "runtime": str(self.runtime_limit),
-            "memory": str(self.memory_limit),
             "language": self.programing_language,
             "test_cases": test_cases,
             "source": self.sources

@@ -27,8 +27,6 @@ function Studio(runtime, element) {
         console.log("Save button clicked!")
         const title = $('#title', element).val()
         const description = $('#description', element).val()
-        const runtimeLimit = $('#runtime_limit', element).val() !== "" ? $('#runtime_limit', element).val() : "1000"
-        const memoryLimit = $('#memory_limit', element).val() !== "" ? $('#memory_limit', element).val() : "500"
         const programingLanguage = $('#programing_language', element).val()
 
         const listInput = document.getElementsByClassName("input_selector")
@@ -64,8 +62,6 @@ function Studio(runtime, element) {
             data: JSON.stringify({
                 title: title,
                 description: description,
-                runtime_limit: runtimeLimit,
-                memory_limit: memoryLimit,
                 programing_language: programingLanguage,
                 listInput: listInput.length === 0 ? [""] : inputs,
                 editor_content: editorContent,
