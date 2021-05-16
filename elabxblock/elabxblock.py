@@ -215,7 +215,7 @@ class ELabXBlock(XBlock):
         request_body = {
             "name": self.title,
             "description": self.description,
-            "runtime": str(self.runtime),
+            "runtime": str(self.runtime_limit),
             "memory": str(self.memory_limit),
             "language": self.programing_language,
             "test_cases": test_cases,
