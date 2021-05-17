@@ -56,7 +56,8 @@ function Studio(runtime, element) {
         
         console.log("<div>" + mergeSource.replaceAll("<br>", "<br />") + "</div>")
 
-        // runtime.notify('save', {state: 'start'})
+        //For develoment, comment out runtime.notify method
+        runtime.notify('save', {state: 'start'})
         $.ajax({
             type: "POST",
             url: handleSaveUrl,
@@ -72,7 +73,8 @@ function Studio(runtime, element) {
             }),
             success: saveStatus
         }).done(function (response) {
-            // runtime.notify('save', {state: 'end'})
+            //For develoment, comment out runtime.notify method
+            runtime.notify('save', {state: 'end'})
         })
     });
 
