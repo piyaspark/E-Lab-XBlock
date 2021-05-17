@@ -32,12 +32,12 @@ function Student(runtime, element) {
                         console.log("meet condition")
                         $('#result_show_list').text("")
                         const resultLists = response.result
-                        let passCount = 0
+                        // let passCount = 0
                         for (let i = 0; i < resultLists.length; i++) {
-                            if (resultLists[i].toLowerCase() === "p") passCount += 1
+                            // if (resultLists[i].toLowerCase() === "p") passCount += 1
                             $('#result_show_list').append(resultLists[i])
                         }
-                        $('#result_show_score').text(passCount)
+                        // $('#result_show_score').text(passCount)
                         sendScore(resultLists)
                         clearInterval(fetchSubmitStatusInterval);
                     }
@@ -93,30 +93,30 @@ function Student(runtime, element) {
         }))
     });
 
-    $("#current").click(function (eventObject) {
-        const current = $('#current')
-        if (!current.hasClass("active")) {
-            current.addClass("active");
-            $('#recent').removeClass("active");
-            $('#currentDiv').removeClass("hidden")
-            $('#recentDiv').addClass("hidden")
-        }
-    })
-
-    $("#recent").click(function (eventObject) {
-        const recent = $('#recent')
-        if (!recent.hasClass("active")) {
-            recent.addClass("active");
-            $('#current').removeClass("active");
-            $('#currentDiv').addClass("hidden")
-            $('#recentDiv').removeClass("hidden")
-        }
-    })
-
-    $("#copyCurrent").click(function (eventObject) {
-        setStudentsInputs(getRecentInputs())
-        $("#current").click()
-    })
+    // $("#current").click(function (eventObject) {
+    //     const current = $('#current')
+    //     if (!current.hasClass("active")) {
+    //         current.addClass("active");
+    //         $('#recent').removeClass("active");
+    //         $('#currentDiv').removeClass("hidden")
+    //         $('#recentDiv').addClass("hidden")
+    //     }
+    // })
+    //
+    // $("#recent").click(function (eventObject) {
+    //     const recent = $('#recent')
+    //     if (!recent.hasClass("active")) {
+    //         recent.addClass("active");
+    //         $('#current').removeClass("active");
+    //         $('#currentDiv').addClass("hidden")
+    //         $('#recentDiv').removeClass("hidden")
+    //     }
+    // })
+    //
+    // $("#copyCurrent").click(function (eventObject) {
+    //     setStudentsInputs(getRecentInputs())
+    //     $("#current").click()
+    // })
 
     const getStudentInputs = () => {
         const answerSpan = []
@@ -144,61 +144,61 @@ function Student(runtime, element) {
         };
     }
 
-    const getRecentInputs = () => {
-        const answerSpan = []
-        const sourceSpan = []
-        const answerSpanIp = document.getElementById('recentDiv').getElementsByClassName('answerspanInput')
-        const sourceSpanIp = document.getElementById('recentDiv').getElementsByClassName('sourcespanInput')
-
-        for (let i = 0; i < answerSpanIp.length; i++) {
-            let content = answerSpanIp[i].value;
-            answerSpan.push(
-                content
-            );
-        }
-
-        for (let i = 0; i < sourceSpanIp.length; i++) {
-            let content = sourceSpanIp[i].value;
-            sourceSpan.push(
-                content
-            );
-        }
-
-        return {
-            answerSpan,
-            sourceSpan
-        };
-    }
+    // const getRecentInputs = () => {
+    //     const answerSpan = []
+    //     const sourceSpan = []
+    //     const answerSpanIp = document.getElementById('recentDiv').getElementsByClassName('answerspanInput')
+    //     const sourceSpanIp = document.getElementById('recentDiv').getElementsByClassName('sourcespanInput')
+    //
+    //     for (let i = 0; i < answerSpanIp.length; i++) {
+    //         let content = answerSpanIp[i].value;
+    //         answerSpan.push(
+    //             content
+    //         );
+    //     }
+    //
+    //     for (let i = 0; i < sourceSpanIp.length; i++) {
+    //         let content = sourceSpanIp[i].value;
+    //         sourceSpan.push(
+    //             content
+    //         );
+    //     }
+    //
+    //     return {
+    //         answerSpan,
+    //         sourceSpan
+    //     };
+    // }
 
 }
 
 
-const setStudentsInputs = (studentInput) => {
-    const {answerSpan, sourceSpan} = studentInput
-
-    const answerSpanIp = document.getElementById('currentDiv').getElementsByClassName('answerspanInput')
-    const sourceSpanIp = document.getElementById('currentDiv').getElementsByClassName('sourcespanInput')
-
-    for (let i = 0; i < answerSpanIp.length; i++) {
-        answerSpanIp[i].value = answerSpan[i];
-    }
-
-    for (let i = 0; i < sourceSpanIp.length; i++) {
-        sourceSpanIp[i].value = sourceSpan[i];
-    }
-}
-
-const setRecentInputs = (studentInput) => {
-    const {answerSpan, sourceSpan} = studentInput
-
-    const answerSpanIp = document.getElementById('recentDiv').getElementsByClassName('answerspanInput')
-    const sourceSpanIp = document.getElementById('recentDiv').getElementsByClassName('sourcespanInput')
-
-    for (let i = 0; i < answerSpanIp.length; i++) {
-        answerSpanIp[i].value = answerSpan[i];
-    }
-
-    for (let i = 0; i < sourceSpanIp.length; i++) {
-        sourceSpanIp[i].value = sourceSpan[i];
-    }
-}
+// const setStudentsInputs = (studentInput) => {
+//     const {answerSpan, sourceSpan} = studentInput
+//
+//     const answerSpanIp = document.getElementById('currentDiv').getElementsByClassName('answerspanInput')
+//     const sourceSpanIp = document.getElementById('currentDiv').getElementsByClassName('sourcespanInput')
+//
+//     for (let i = 0; i < answerSpanIp.length; i++) {
+//         answerSpanIp[i].value = answerSpan[i];
+//     }
+//
+//     for (let i = 0; i < sourceSpanIp.length; i++) {
+//         sourceSpanIp[i].value = sourceSpan[i];
+//     }
+// }
+//
+// const setRecentInputs = (studentInput) => {
+//     const {answerSpan, sourceSpan} = studentInput
+//
+//     const answerSpanIp = document.getElementById('recentDiv').getElementsByClassName('answerspanInput')
+//     const sourceSpanIp = document.getElementById('recentDiv').getElementsByClassName('sourcespanInput')
+//
+//     for (let i = 0; i < answerSpanIp.length; i++) {
+//         answerSpanIp[i].value = answerSpan[i];
+//     }
+//
+//     for (let i = 0; i < sourceSpanIp.length; i++) {
+//         sourceSpanIp[i].value = sourceSpan[i];
+//     }
+// }

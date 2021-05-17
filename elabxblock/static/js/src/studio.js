@@ -53,9 +53,10 @@ function Studio(runtime, element) {
         // const tmce = tinymce.activeEditor.getBody()
         // const studentBody = `<div contenteditable="false">${toStudentContent(tinymce.activeEditor.getBody())}</div>`;
         const studentBody = `<div contenteditable="false">${toStudentContent(body)}</div>`;
-        console.log(studentBody)
+        
+        console.log("<div>" + mergeSource.replaceAll("<br>", "<br />") + "</div>")
 
-        runtime.notify('save', {state: 'start'})
+        // runtime.notify('save', {state: 'start'})
         $.ajax({
             type: "POST",
             url: handleSaveUrl,
@@ -71,7 +72,7 @@ function Studio(runtime, element) {
             }),
             success: saveStatus
         }).done(function (response) {
-            runtime.notify('save', {state: 'end'})
+            // runtime.notify('save', {state: 'end'})
         })
     });
 
