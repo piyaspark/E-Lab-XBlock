@@ -3,7 +3,7 @@
     <h3 class="hd hd-3">{{title}}</h3>
     <p>{{description}}</p>
     <div class="flex flex-row text-base  mb-2">
-        <p>Result: <b>[<span id="result_show_list"></span>]</b></p>
+        <p>Result: <b>[<span id="result_show_list_{{elabxblock_id}}"></span>]</b></p>
     </div>
     {% if grading_results %}
 <!--    <div class="problem_grade mb-1"><span id="result_show_score">0</span>/{{grading_results | length}} point</div>-->
@@ -18,7 +18,7 @@
 <!--                <button class="tab_button p-2" id="recent">Recent</button>-->
 <!--            </div>-->
             <div class="student_container mb-2">
-                <div class="p-4 " id="currentDiv">{{student_content | safe}}</div>
+                <div class="p-4 " id="currentDiv_{{elabxblock_id}}">{{student_content | safe}}</div>
                 <div class="hidden" id="recentDiv">
                     <div class="p-2 bg-green-400 mb-2">
                         <button id="copyCurrent">Copy to current</button>
@@ -31,36 +31,5 @@
         </div>
     </div>
     <button id="submit_button">Submit</button>
-
-    <script>
-        $(window).on("load", function () {
-            //set history
-            // const studentInputs = {{student_inputs | safe}}
-            // console.log(studentInputs)
-            // if (jQuery.isEmptyObject(studentInputs)) {
-            //     $('#recent').prop("disabled", true)
-            // } else {
-            //     $('#recent').prop("disabled", false)
-            //     setRecentInputs(studentInputs)
-            // }
-
-            // result list
-            const resultList = {{grading_results | safe}}
-            const inputList = {{input_list | safe}}
-            if (resultList.length === 0) {
-                for (let i = 0; i < inputList.length; i++) {
-                    $('#result_show_list').append("-")
-                }
-            } else {
-                // let passCount = 0
-                for (let i = 0; i < resultList.length; i++) {
-                    // if (resultList[i].toLowerCase() === "p") passCount += 1
-                    $('#result_show_list').append(resultList[i])
-                }
-                // $('#result_show_score').text(passCount)
-            }
-            console.log(resultList)
-        })
-    </script>
     {% endif %}
 </div>

@@ -8,7 +8,7 @@ import os
 import pkg_resources
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock
-from xblock.fields import Scope, List, String, Dict
+from xblock.fields import UNIQUE_ID, Scope, List, String, Dict
 from xblockutils.resources import ResourceLoader
 
 # Make '_' a no-op so we can scrape strings
@@ -26,6 +26,8 @@ def resource_string(path):
 class ELabXBlock(XBlock):
     # Fields are defined on the class.  You can access them in your code as
     # self.<fieldname>.
+
+    elabxblock_id = String(scope=Scope.settings, default=UNIQUE_ID)
 
     has_score = True
     title = String(help="Title of the problem", default="", scope=Scope.content)
@@ -72,7 +74,8 @@ class ELabXBlock(XBlock):
                         'student_content': self.student_contents,
                         'student_inputs': self.student_inputs,
                         'input_list': self.input_list,
-                        'grading_results': self.grading_results
+                        'grading_results': self.grading_results,
+                        'elabxblock_id': str(self.elabxblock_id)
                         }
         template = loader.render_django_template(
             'static/html/student.html',
@@ -82,7 +85,15 @@ class ELabXBlock(XBlock):
         frag = Fragment(template)
         frag.add_css(resource_string("static/css/elabxblock.css"))
         frag.add_javascript(resource_string("static/js/src/student.js"))
-        frag.initialize_js('Student')
+        frag.initialize_js('Student', {'title': self.title,
+                                       'description': self.description,
+                                       'programing_language': self.available_languages[self.programing_language],
+                                       'student_content': self.student_contents,
+                                       'student_inputs': self.student_inputs,
+                                       'input_list': self.input_list,
+                                       'grading_results': self.grading_results,
+                                       'elabxblock_id': str(self.elabxblock_id)
+                                       })
         return frag
 
     def studio_view(self, context=None):
@@ -91,7 +102,7 @@ class ELabXBlock(XBlock):
         when viewing courses.
         """
         context_html = {'title': self.title, 'description': self.description,
-                         'programing_language': self.programing_language,
+                        'programing_language': self.programing_language,
                         'input_list': self.input_list, 'pl': self.available_languages,
                         'editor_content': self.editor_content, 'tinymce_api_key': self.TINYMCE_API_KEY}
         template = loader.render_django_template(
@@ -112,7 +123,6 @@ class ELabXBlock(XBlock):
         post_answer = self.post_answer()
         print(post_answer['submit_id'])
         return {"success": 1, "submit_id": post_answer['submit_id']}
-        
 
     @XBlock.json_handler
     def get_score(self, data, suffix=''):
@@ -122,8 +132,8 @@ class ELabXBlock(XBlock):
         max_score = len(self.grading_results)
 
         self.runtime.publish(self, "grade",
-                    { 'value': submission_score,
-                      'max_value': max_score })
+                             {'value': submission_score,
+                              'max_value': max_score})
 
         return {"success": 1}
 
@@ -228,7 +238,6 @@ class ELabXBlock(XBlock):
         self.task_id = str(res_body["id"])
         print(self.answer_keys)
         print(self.task_id)
-
 
     @XBlock.json_handler
     def increase_input(self, data, suffix=''):

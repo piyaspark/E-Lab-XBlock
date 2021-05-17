@@ -1,21 +1,58 @@
-function Student(runtime, element) {
+function Student(runtime, element, data) {
 
-    // $(function ($) {
-    //     /* Here's where you'd do things on page load. */
-    // });
+    const elabxblockId = data.elabxblock_id
+    const resultList2 = data.grading_results
+    const inputList = data.input_list
+    const handleGetScore = runtime.handlerUrl(element, 'get_score');
+    const handleSubmitUrl = runtime.handlerUrl(element, 'submit_answer');
+
+    $(window).on("load", function () {
+        //set history
+        // const studentInputs = {{student_inputs | safe}}
+        // console.log(studentInputs)
+        // if (jQuery.isEmptyObject(studentInputs)) {
+        //     $('#recent').prop("disabled", true)
+        // } else {
+        //     $('#recent').prop("disabled", false)
+        //     setRecentInputs(studentInputs)
+        // }
+
+        // result list
+        console.log(elabxblockId.toString())
+        $('#result_show_list_' + elabxblockId).text("")
+        if (resultList2.length === 0) {
+            for (let i = 0; i < inputList.length; i++) {
+                $('#result_show_list_' + elabxblockId).append("-")
+            }
+        } else {
+            // let passCount = 0
+            for (let i = 0; i < resultList2.length; i++) {
+                // if (resultList[i].toLowerCase() === "p") passCount += 1
+                $('#result_show_list_' + elabxblockId).append(resultList2[i])
+            }
+            // $('#result_show_score').text(passCount)
+        }
+        console.log(resultList2)
+    })
 
     const submitHandle = (result) => {
         console.log(result)
         if (result.success === 1) {
             fetchSubmitStatus(result.submit_id)
-            
+
         } else {
             alert("Submit failure: " + result.message)
         }
     }
 
     const fetchSubmitStatus = (submitId) => {
+        let count = 20;
+        $('#result_show_list_' + elabxblockId).text("")
+
         const fetchSubmitStatusInterval = setInterval(() => {
+            if (count === 0) {
+                onSubmitFail();
+            }
             $.ajax({
                 type: "GET",
                 url: "https://kulomb.pknn.dev/api/tasks/submit/status/" + submitId,
@@ -30,12 +67,12 @@ function Student(runtime, element) {
                     console.log(response.result.length)
                     if (response.result.length !== 0) {
                         console.log("meet condition")
-                        $('#result_show_list').text("")
+                        $('#result_show_list_' + elabxblockId).text("")
                         const resultLists = response.result
                         // let passCount = 0
                         for (let i = 0; i < resultLists.length; i++) {
                             // if (resultLists[i].toLowerCase() === "p") passCount += 1
-                            $('#result_show_list').append(resultLists[i])
+                            $('#result_show_list_' + elabxblockId).append(resultLists[i])
                         }
                         // $('#result_show_score').text(passCount)
                         sendScore(resultLists)
@@ -43,11 +80,19 @@ function Student(runtime, element) {
                     }
                 },
                 error: () => {
-                    clearInterval(fetchSubmitStatusInterval);
+                    for (let i = 0; i < inputList.length; i++) {
+                        $('#result_show_list_' + elabxblockId).append("-")
+                    }
+                    onSubmitFail();
                 }
             });
-
+            count--;
         }, 3000)
+
+        const onSubmitFail = () => {
+
+            clearInterval(fetchSubmitStatusInterval);
+        }
     }
 
     const sendScore = (resultLists) => {
@@ -55,22 +100,17 @@ function Student(runtime, element) {
             type: "POST",
             url: handleGetScore,
             data: JSON.stringify({
-            gradingResult: resultLists
-        }),
-        success: () => {
-            console.log("sendScore: success");
-        } 
+                gradingResult: resultLists
+            }),
+            success: () => {
+                console.log("sendScore: success");
+            }
         })
     }
-
-    const handleGetScore = runtime.handlerUrl(element, 'get_score');
-    const handleSubmitUrl = runtime.handlerUrl(element, 'submit_answer');
-
 
     $(element).find('#submit_button').click(function (eventObject) {
         const studentInputs = getStudentInputs()
         console.log("🚀 ~ file: student.js ~ line 12 ~ studentInputs", studentInputs)
-        $('#result_show_list').text("darm")
 
         $.ajax({
             type: "POST",
@@ -79,12 +119,13 @@ function Student(runtime, element) {
                 student_inputs: studentInputs
             }),
             success: submitHandle,
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.log(status)
                 console.log(error)
                 console.log("error ==> Data: " + JSON.stringify({
                     student_inputs: studentInputs
                 }))
+                alert("Error to submit answer")
               }
         });
 
@@ -121,8 +162,8 @@ function Student(runtime, element) {
     const getStudentInputs = () => {
         const answerSpan = []
         const sourceSpan = []
-        const answerSpanIp = document.getElementById('currentDiv').getElementsByClassName('answerspanInput')
-        const sourceSpanIp = document.getElementById('currentDiv').getElementsByClassName('sourcespanInput')
+        const answerSpanIp = document.getElementById('currentDiv_' + elabxblockId).getElementsByClassName('answerspanInput')
+        const sourceSpanIp = document.getElementById('currentDiv_' + elabxblockId).getElementsByClassName('sourcespanInput')
 
         for (let i = 0; i < answerSpanIp.length; i++) {
             let content = answerSpanIp[i].value;
