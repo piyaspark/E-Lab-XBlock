@@ -34,6 +34,7 @@ function Studio(runtime, element) {
         for (let i = 0; i < listInput.length; i++) {
             if (listInput[i].value !== "")
                 inputs.push(listInput[i].value)
+                console.log(listInput[i].value);
         }
 
         const frameObj = document.getElementsByTagName("IFRAME")[0];

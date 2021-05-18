@@ -131,6 +131,10 @@ class ELabXBlock(XBlock):
         submission_score = self.map_score(self.grading_results)
         max_score = len(self.grading_results)
 
+        ''' 
+        This is grading function which will grade the block's score when student submitted their answer.
+        For development, comment out this code.
+        '''
         self.runtime.publish(self, "grade",
                              {'value': submission_score,
                               'max_value': max_score})
@@ -220,7 +224,14 @@ class ELabXBlock(XBlock):
 
         test_cases = []
         for i in range(len(self.input_list)):
-            test_cases.append(self.input_list[i]["value"])
+            test_case = ""
+            string_test_case = self.input_list[i]["value"].split("\n")
+            for j in range(len(string_test_case)):
+                test_case = test_case + '"' + string_test_case[j] + '"\n'
+
+            test_cases.append(test_case)
+
+        print(test_cases)
 
         request_body = {
             "name": self.title,
@@ -238,6 +249,8 @@ class ELabXBlock(XBlock):
         self.task_id = str(res_body["id"])
         print(self.answer_keys)
         print(self.task_id)
+
+        return {"success": 1}
 
     @XBlock.json_handler
     def increase_input(self, data, suffix=''):
