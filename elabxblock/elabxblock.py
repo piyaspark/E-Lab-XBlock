@@ -27,14 +27,16 @@ class ELabXBlock(XBlock):
     # Fields are defined on the class.  You can access them in your code as
     # self.<fieldname>.
 
+    # Define each block's id with unique id when created
     elabxblock_id = String(scope=Scope.settings, default=UNIQUE_ID)
 
+    # To publish grade to Open edX, it must set to true
     has_score = True
+    
     title = String(help="Title of the problem", default="", scope=Scope.content)
     description = String(help="Description about the problem such as instruction", default="", scope=Scope.content)
     programing_language = String(help="Programming langauge that need to use in this problem", default="python",
                                  scope=Scope.content)
-
     editor_content = String(default="<div></div>", scope=Scope.content)
     input_list = List(default=[{'i': 0, 'value': ''}], scope=Scope.content)
     student_contents = String(default="<div></div>", scope=Scope.content)
@@ -118,6 +120,9 @@ class ELabXBlock(XBlock):
 
     @XBlock.json_handler
     def submit_answer(self, data, suffix=''):
+        '''
+        Submit a answer and post to E-Labsheet system to grade 
+        '''
         self.student_inputs = data['student_inputs']
         print("step1")
         post_answer = self.post_answer()
@@ -126,15 +131,17 @@ class ELabXBlock(XBlock):
 
     @XBlock.json_handler
     def get_score(self, data, suffix=''):
+        '''
+        Get grading result from JavaScript file and publish score to Open edX student's progress
+        '''
         self.grading_results = data['gradingResult']
 
         submission_score = self.map_score(self.grading_results)
         max_score = len(self.grading_results)
 
-        ''' 
-        This is grading function which will grade the block's score when student submitted their answer.
-        For development, comment out this code.
-        '''
+        
+        # This is grading function which will grade the block's score when student submitted their answer.
+        #For development, comment out this code.
         self.runtime.publish(self, "grade",
                              {'value': submission_score,
                               'max_value': max_score})
@@ -143,6 +150,9 @@ class ELabXBlock(XBlock):
 
     @XBlock.json_handler
     def save_data(self, data, suffix=''):
+        '''
+        Save and create a task 
+        '''
 
         if not data['title']:
             return {"success": 0, "data": 'title'}
@@ -153,8 +163,6 @@ class ELabXBlock(XBlock):
 
         self.title = data['title']
         self.description = data['description']
-        # self.runtime_limit = data['runtime_limit']
-        # self.memory_limit = data['memory_limit']
         self.programing_language = data['programing_language']
         self.editor_content = data['editor_content']
         self.student_contents = data['student_content']
@@ -170,7 +178,6 @@ class ELabXBlock(XBlock):
                 'value': listInput[i]
             })
         self.input_list = inputs
-        # self.student_inputs = {}
 
         self.create_task()
 
@@ -185,44 +192,37 @@ class ELabXBlock(XBlock):
         return score
 
     def post_answer(self):
+        '''
+        Send a request when submitted an answer in student view or LMS
+        '''
+
         url = "https://kulomb.pknn.dev/elab/api/tasks/submit/"
 
         student_answers = self.student_inputs['sourceSpan']
         answer_group = dict()
 
+        # Map answer keys with answer inputs for E-Labsheet system to check with grader system
         for i in range(len(student_answers)):
             parameter_name = self.answer_keys[i]
             answer_group[parameter_name] = student_answers[i]
 
         payload = {"answer": answer_group}
-        # print(payload)
-
         response = requests.post(url + self.task_id, json=payload)
-        # print("--- post_answer: response ---")
-        # print(response.json()) 
-
         res_body = response.json()
         submit_id = str(res_body["id"])
-        # print("here3")
-        # results = self.get_submit_status(submit_id)
-        # print(results)
-        # print("here4")
+
         return {'submit_id': submit_id}
 
-    # def get_submit_status(self, submit_id):
-    #     url = "https://kulomb.pknn.dev/api/tasks/submit/status/"
-    #     response = requests.get(url + submit_id)
-    #     print("--- get_submit_status: response ---")
-    #     print(response.json())
-    #     res_body = response.json()
-    #     results = res_body["results"]
-    #
-    #     return results
-
     def create_task(self):
+        '''
+        Send a request when saved task in studio view or CMS.
+        '''
+
         url = "https://kulomb.pknn.dev/api/tasks"
 
         test_cases = []
+
+        # Map test cases into a form that appropriate with request body
         for i in range(len(self.input_list)):
             test_case = ""
             string_test_case = self.input_list[i]["value"].split("\n")
@@ -242,18 +242,20 @@ class ELabXBlock(XBlock):
         }
 
         response = requests.post(url, json=request_body)
-        print(response.status_code)
         res_body = response.json()
-        print(response.json())
+
         self.answer_keys = res_body["answer_keys"]
         self.task_id = str(res_body["id"])
-        print(self.answer_keys)
-        print(self.task_id)
 
         return {"success": 1}
 
+    
     @XBlock.json_handler
     def increase_input(self, data, suffix=''):
+        '''
+        This method handles adding test cases
+        '''
+
         self.input_list.append({'i': len(self.input_list), 'value': ''})
 
         return {"input_list": self.input_list}

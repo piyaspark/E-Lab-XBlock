@@ -47,18 +47,15 @@ function Studio(runtime, element) {
         }
         
         //get answer content then post request to API
-        // const answerContent = getAnswerContent(tinymce.activeEditor.getBody());
         const answerContent = getAnswerContent(body);
         console.log(answerContent)
 
-        // const tmce = tinymce.activeEditor.getBody()
-        // const studentBody = `<div contenteditable="false">${toStudentContent(tinymce.activeEditor.getBody())}</div>`;
         const studentBody = `<div contenteditable="false">${toStudentContent(body)}</div>`;
         
         console.log("<div>" + mergeSource.replaceAll("<br>", "<br />") + "</div>")
 
         //For develoment, comment out runtime.notify method
-        runtime.notify('save', {state: 'start'})
+        // runtime.notify('save', {state: 'start'})
         $.ajax({
             type: "POST",
             url: handleSaveUrl,
@@ -75,7 +72,7 @@ function Studio(runtime, element) {
             success: saveStatus
         }).done(function (response) {
             //For develoment, comment out runtime.notify method
-            runtime.notify('save', {state: 'end'})
+            // runtime.notify('save', {state: 'end'})
         })
     });
 
@@ -157,6 +154,6 @@ const getAnswerContent = (body) => {
         answerSpan: answerSpanContents,
         sourceSpan: sourceSpanContents
     }
-    console.log("🚀 ~ file: studio.js ~ line 264 ~ getAnswerContent ~ answerContents", answerContents)
+
     return answerContents;
 }
