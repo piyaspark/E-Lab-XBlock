@@ -211,7 +211,6 @@ function Student(runtime, element, data) {
         };
     }
 
-}
 
 
 const setStudentsInputs = (studentInput) => {
