@@ -3,13 +3,13 @@
 import datetime
 import logging
 import requests
-import os
 
 import pkg_resources
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock
 from xblock.fields import UNIQUE_ID, Scope, List, String, Dict
 from xblockutils.resources import ResourceLoader
+from decouple import config
 
 # Make '_' a no-op so we can scrape strings
 _ = lambda text: text
@@ -49,7 +49,7 @@ class ELabXBlock(XBlock):
     grading_results = List(default=[], scope=Scope.user_state)
     student_inputs = Dict(default={}, scope=Scope.user_state)
 
-    TINYMCE_API_KEY = os.environ.get('TINYMCE_API_KEY')
+    TINYMCE_API_KEY = config('TINYMCE_API_KEY')
 
     available_languages = {
         'python': 'Python',
@@ -124,9 +124,8 @@ class ELabXBlock(XBlock):
         Submit a answer and post to E-Labsheet system to grade 
         '''
         self.student_inputs = data['student_inputs']
-        print("step1")
         post_answer = self.post_answer()
-        print(post_answer['submit_id'])
+        
         return {"success": 1, "submit_id": post_answer['submit_id']}
 
     @XBlock.json_handler
@@ -168,7 +167,6 @@ class ELabXBlock(XBlock):
         self.student_contents = data['student_content']
         self.answer_contents = data['answer_content']
         self.sources = data['sources']
-        print(self.sources)
 
         listInput = data['listInput']
         inputs = []
@@ -230,8 +228,6 @@ class ELabXBlock(XBlock):
                 test_case = test_case + '"' + string_test_case[j] + '"\n'
 
             test_cases.append(test_case)
-
-        print(test_cases)
 
         request_body = {
             "name": self.title,
